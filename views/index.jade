@@ -1,0 +1,9 @@
+extends ./layout.jade
+
+block javascripts
+	if verbose
+		script(src="/init.js")
+		script(src="/index.js")
+	else
+		script
+			include ../build/index.min.js

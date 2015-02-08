@@ -1,0 +1,8 @@
+{
+	"title": "Dashboard",
+	"icon": "/index.gif",
+	"paths": {
+		"stage": "build",
+		"dist": "public"
+	}
+}
