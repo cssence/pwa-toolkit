@@ -17,7 +17,10 @@ module.exports = function (grunt) {
 		cssmin: {
 			css: {
 				files: {
-					'<%= config.paths.stage %>/bookmarks.min.css': ['static/bookmarks.css']
+					'<%= config.paths.dist %>/bookmarks.css': ['static/bookmarks.css'],
+					'<%= config.paths.dist %>/calendar.css': ['static/calendar.css'],
+					'<%= config.paths.dist %>/iframer.css': ['static/iframer.css'],
+					'<%= config.paths.stage %>/init.min.css': ['static/init.css']
 				}
 			}
 		},
@@ -26,7 +29,9 @@ module.exports = function (grunt) {
 		uglify: {
 			js: {
 				files: {
-					"<%= config.paths.stage %>/bookmarks.min.js": ["static/bookmarks.js"],
+					"<%= config.paths.dist %>/bookmarks.js": ["static/bookmarks.js"],
+					"<%= config.paths.dist %>/calendar.js": ["static/calendar.js"],
+					"<%= config.paths.dist %>/iframer.js": ["static/iframer.js"],
 					"<%= config.paths.stage %>/index.min.js": ["static/init.js", "static/index.js"]
 				}
 			}
@@ -37,7 +42,7 @@ module.exports = function (grunt) {
 			compile: {
 				options: {
 					data: {
-						icon: "<%= config.icon %>"
+						title: "<%= config.title %>"
 					}
 				},
 				files: {
@@ -51,8 +56,6 @@ module.exports = function (grunt) {
 		copy: {
 			assets: {
 				files: [
-					{src: "<%= config.paths.stage %>/bookmarks.min.css", dest: "<%= config.paths.dist %>/bookmarks.css"},
-					{src: "<%= config.paths.stage %>/bookmarks.min.js", dest: "<%= config.paths.dist %>/bookmarks.js"},
 					{src: "LICENSE", dest: "<%= config.paths.dist %>/LICENSE"}
 				]
 			}

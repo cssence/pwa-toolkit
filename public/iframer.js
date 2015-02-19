@@ -1,0 +1,1 @@
+!function(a,b){"use strict";"object"==typeof b.data&&b.data.hasOwnProperty("length")&&b.data.forEach(function(b){var c;b.url&&(c=a.createElement("iframe"),c.src=b.url,(b.style||"").split(";").forEach(function(a){a=a.split(":"),c.style[a[0]]=a[1]}),a.body.appendChild(c))})}(document,App);

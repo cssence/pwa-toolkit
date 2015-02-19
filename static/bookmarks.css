@@ -1,20 +1,4 @@
-*,
-*::before,
-*::after {
-	-moz-box-sizing: inherit; box-sizing: inherit;
-}
-html {
-	-moz-box-sizing: border-box; box-sizing: border-box;
-	background: #fff;
-	font: 5vw/1.5 sans-serif;
-	color: #000;
-}
-* {
-	margin: 0;
-	padding: 0;
-}
 ul {
-	list-style: none;
 	font-size: 0;
 }
 li {
@@ -26,6 +10,7 @@ a {
 	padding: 0.625rem 0 0.5rem 4.5rem;
 	background: #fff;
 	color: #000;
+	line-height: 1.5;
 	text-decoration: none;
 }
 a::after {
@@ -47,7 +32,7 @@ img {
 	top: 0;
 	left: 0;
 }
-@media screen and (orientation: landscape) {
+@media (orientation: landscape) {
 	html {
 		background: #000;
 	}

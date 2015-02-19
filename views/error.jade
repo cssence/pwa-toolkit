@@ -1,4 +1,8 @@
-extends ./layout.jade
+extends ./index.jade
+
+append stylesheets
+	style.
+		[role=alert]{padding:1em}[role=alert]::before{content:"404";float:left;height:9em;margin-right:1em;opacity:0.25}
 
 block content
 	p(role="alert")

@@ -1,5 +1,5 @@
 # Bookmarks
 
 ```css
-@media screen{ul{white-space:nowrap}}
+ul{white-space:nowrap}
 ```

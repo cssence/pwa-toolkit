@@ -1,6 +1,5 @@
 {
-	"title": "Dashboard",
-	"icon": "/index.gif",
+	"title": "cssence.github.io",
 	"paths": {
 		"stage": "build",
 		"dist": "public"

@@ -24,20 +24,15 @@
 	dir.views = path.join(__dirname, "/views");
 	dir.plain = path.join(__dirname, "/static");
 	app.locals.basedir = dir.views;
-	app.use(require("errorhandler")(isDev ? {dumpExceptions: true, showStack: true} : {}));
-	app.use(require("serve-static")(dir.plain, isDev ? {maxAge: 86400} : {}));
-	app.use(require("serve-favicon")(path.join(dir.plain, nconf.get("icon"))));
-	if (!isDev) {
-		app.use(require("compression")());
-	}
+	app.use(require("serve-static")(dir.plain));
 	app.set("port", nconf.get("port"));
 	app.set("views", dir.views);
 	app.set("view engine", "jade");
 
 	// Routes
 	mainController = require("./routes/main");
-	app.get("/", mainController.indexAction(isDev, nconf.get("title"), nconf.get("icon")));
-	app.use(mainController.indexAction(isDev, nconf.get("title"), nconf.get("icon"), 404));
+	app.get("/", mainController.indexAction(isDev, nconf.get("title")));
+	app.use(mainController.indexAction(isDev, nconf.get("title"), 404));
 
 	// Http server
 	require("http").createServer(app).listen(nconf.get("port"), function () {
