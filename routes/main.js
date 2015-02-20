@@ -2,11 +2,11 @@
 (function () {
 	"use strict";
 	module.exports = {
-		indexAction: function (isDev, title, error) {
+		renderAction: function (template, options) {
 			return function (req, res) {
-				res.render(error ? "error" : "index", {
-					verbose: isDev,
-					title: title
+				res.render(typeof template === "string" ? template : "error", {
+					verbose: options.isDev,
+					title: options.title
 				});
 			};
 		}

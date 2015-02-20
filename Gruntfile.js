@@ -32,6 +32,7 @@ module.exports = function (grunt) {
 					"<%= config.paths.dist %>/bookmarks.js": ["static/bookmarks.js"],
 					"<%= config.paths.dist %>/calendar.js": ["static/calendar.js"],
 					"<%= config.paths.dist %>/iframer.js": ["static/iframer.js"],
+					"<%= config.paths.stage %>/derefer.min.js": ["static/derefer.js"],
 					"<%= config.paths.stage %>/index.min.js": ["static/init.js", "static/index.js"]
 				}
 			}
@@ -46,6 +47,7 @@ module.exports = function (grunt) {
 					}
 				},
 				files: {
+					"<%= config.paths.dist %>/derefer/index.html": ["views/derefer.jade"],
 					"<%= config.paths.dist %>/index.html": ["views/index.jade"],
 					"<%= config.paths.dist %>/404.html": ["views/error.jade"]
 				}

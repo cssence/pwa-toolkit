@@ -1,5 +1,5 @@
 /*global App: false */
-(function (document, App) {
+(function (document, location, App) {
 	"use strict";
 	var todo = {}, todoXhr, countdown, reservedWords = ["html", "script", "style"];
 	reservedWords.concat(["json"]).forEach(function (word) {
@@ -53,4 +53,4 @@
 			countdown();
 		});
 	});
-}(document, App));
+}(document, location, App));

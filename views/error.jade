@@ -1,8 +1,11 @@
-extends ./index.jade
+extends ./layout.jade
+
+block title
+	title Page not found
 
 append stylesheets
 	style.
-		[role=alert]{padding:1em}[role=alert]::before{content:"404";float:left;height:9em;margin-right:1em;opacity:0.25}
+		[role=alert]{position:relative;padding:1em 1em 1em 3em}[role=alert]::before{content:"404";position:absolute;left:1em;opacity:0.25}
 
 block content
 	p(role="alert")

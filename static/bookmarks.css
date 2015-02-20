@@ -14,7 +14,7 @@ a {
 	text-decoration: none;
 }
 a::after {
-	content: attr(href);
+	content: attr(title);
 	font-size: 75%;
 	color: #ccc;
 }

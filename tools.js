@@ -3,7 +3,7 @@
 (function () {
 	"use strict";
 
-	var	nconf, path, dir, isDev, app, mainController;
+	var	nconf, path, dir, app, mainController, options = {};
 	path = require("path");
 
 	// Read configuration (environment)
@@ -18,7 +18,7 @@
 	}
 
 	// Initialization
-	isDev = "development" === nconf.get("env").toLowerCase();
+	options.isDev = "development" === nconf.get("env").toLowerCase();
 	dir = {};
 	app = require("express")();
 	dir.views = path.join(__dirname, "/views");
@@ -31,8 +31,10 @@
 
 	// Routes
 	mainController = require("./routes/main");
-	app.get("/", mainController.indexAction(isDev, nconf.get("title")));
-	app.use(mainController.indexAction(isDev, nconf.get("title"), 404));
+	options.title = nconf.get("title");
+	app.get("/", mainController.renderAction("index", options));
+	app.get("/derefer/", mainController.renderAction("derefer", options));
+	app.use(mainController.renderAction(404, options));
 
 	// Http server
 	require("http").createServer(app).listen(nconf.get("port"), function () {

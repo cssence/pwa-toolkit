@@ -29,7 +29,7 @@
 	index.last = index.week.next - 1 + 50 * DAYS_IN_WEEK;
 	markWeek = function (period) {
 		if (index.current === index.week[period]) {
-			week.setAttribute("data-week", period);
+			week.id = period + "-week";
 		}
 	};
 	marker.setDate(now.getDate() + index.first);
@@ -44,8 +44,8 @@
 		if (marker.getDate() === 1) {
 			day.setAttribute("data-month", marker.toGMTString().split(" ")[2].toUpperCase());
 		}
-		if (index.current <= 0) {
-			day.classList.add(index.current === 0 ? "today" : "past");
+		if (index.current === 0) {
+			day.id = "today";
 		}
 		if ([0, 6].indexOf(marker.getDay()) !== -1) {
 			day.classList.add("weekend");
@@ -60,7 +60,7 @@
 		}
 	}
 	document.body.appendChild(calendar);
-	document.querySelector("[data-week='last']").scrollIntoView(true);
+	document.getElementById("last-week").scrollIntoView(true);
 	document.body.addEventListener("click", function (event) {
 		var dayExpanded, day;
 		dayExpanded = document.querySelector("[aria-expanded]");
@@ -71,7 +71,7 @@
 			if (dayExpanded) {
 				dayExpanded.removeAttribute("aria-expanded");
 			}
-			if (day && !day.getAttribute("aria-expanded") && day.querySelectorAll(".event").length) {
+			if (day && !day.getAttribute("aria-expanded") && day.querySelector(".events")) {
 				day.setAttribute("aria-expanded", "true");
 			}
 		}
@@ -90,18 +90,18 @@
 				return;
 			}
 			var eventList, event, addNode, details = {};
-			addNode = function (parentNode, tagName, text, attributes) {
+			addNode = function (parentNode, tagName, text, options) {
 				var node;
-				attributes = attributes || {};
+				options = options || {};
 				if (text) {
 					node = document.createElement(tagName);
-					["className", "href", "title"].forEach(function (attribute) {
-						if (attributes[attribute]) {
-							node[attribute] = attributes[attribute];
+					["className", "title"].forEach(function (attribute) {
+						if (options[attribute]) {
+							node[attribute] = options[attribute];
 						}
 					});
 					if (text && typeof text !== "boolean") {
-						node.textContent = text;
+						node[options.html ? "innerHTML" : "textContent"] = text;
 					}
 					parentNode.appendChild(node);
 				}
@@ -122,11 +122,12 @@
 					addNode(details.tags, "li", tag, {className: "tag", title: tag});
 				});
 			}
-			details.location = addNode(event, "p", !!entry.location, {className: "location"});
-			addNode(details.location, "a", entry.location, {href: "/derefer/?u=maps.google.com"});
-			addNode(event, "p", entry.description, {className: "description"});
-			//details.description = addNode(event, "p", !!entry.description, {className: "description"});
-			//details.description.innerHTML = entry.description
+			addNode(event, "p", (entry.location || "").replace(/[\s\S]+/, function (text) {
+				return "<a href=\"derefer?u=" + encodeURIComponent("https://www.google.com/maps?q=" + encodeURIComponent(text)) + "\" target=\"_blank\">" + text + "</a>";
+			}), {className: "location", html: true});
+			addNode(event, "p", (entry.description || "").replace(/(https?)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/g, function (url) {
+				return "<a href=\"derefer?u=" + encodeURIComponent(url) + "\" target=\"_blank\">" + url + "</a>";
+			}), {className: "description", html: true});
 			eventList.appendChild(event);
 		};
 		addEvents(App.data.holidays, "start", function (entry) {
@@ -138,7 +139,7 @@
 		addEvents(App.data.birthdays, "start", function (entry) {
 			var dt, yearOfBirth;
 			entry.tags = [-1].concat(entry.tags || []);
-			["last", "current", "next"].forEach(function (year) {
+			["last", "this", "next"].forEach(function (year) {
 				year = index.year[year];
 				dt = entry.start.split("-");
 				yearOfBirth = parseInt(dt[0], 10);
@@ -154,7 +155,6 @@
 		});
 		addEvents(App.data.tasks, "due", function (entry) {
 			day = document.querySelector("[data-date='" + entry.due.slice(0, 10) + "']");
-			//entry.tags = ["TODO"].concat(entry.tags || []);
 			addEvent(day, "task", entry);
 		});
 	}

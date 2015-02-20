@@ -18,7 +18,9 @@ a:hover {
 	width: calc(1 / 7 * 70vw);
 	height: calc(1 / 7 * 70vw);
 	margin: calc(1 / 7 * 10vw) auto calc(-1 / 7 * 25vw);
-	line-height: calc(1 / 7 * 75vw);
+	border: 1vw solid transparent;
+	border-radius: 50%;
+	line-height: calc(1 / 7 * 75vw - 2vw);
 }
 [data-month]::after {
 	content: attr(data-month);
@@ -26,14 +28,16 @@ a:hover {
 	margin-top: calc(-1 / 7 * 75vw);
 	font-size: 50%;
 }
-[data-month].today::after {
+[data-month]#today::after {
 	color: #fff;
 	text-shadow: -1px 0 #ff3b30, 0 -1px #ff3b30, 1px 0 #ff3b30;
 }
 .alternate { background: #f6f6f6; }
 .weekend { color: #999; }
 [data-public-holiday] { color: #ff3b30; }
-.today::before { background: #ff3b30; border-radius: 50%; color: #fff; }
+[aria-expanded="true"]::before { border-color: #f6f6f6; }
+[aria-expanded="true"].alternate::before { border-color: #fff; }
+#today::before { background-color: #ff3b30; color: #fff; }
 .events {
 	position: absolute;
 	display: block;
@@ -78,9 +82,6 @@ a:hover {
 	font-size: 75%;
 	white-space: nowrap;
 }
-.tag[title="TODO"] { background: #bada55; font-size: 0; }
-.tag[title="TODO"] { background: #bada55; font-size: 0; }
-.tag[title="TODO"]::before { content: "\2714"; padding: 0 0.5ex; font-size: 0.75rem; }
 .tag[title^="@"] { background: #ccc; color: #000; }
 .tag[title*="!"] { background: #ff3b30; }
 time,
@@ -88,6 +89,7 @@ time,
 time { display: inline-block; width: 6ex; background: #000; border: 1px solid transparent; text-align: center; }
 .location,
 .description { margin-top: 0.333rem; color: #ccc; font-size: 75%; }
+
 [aria-expanded="true"] .events {
 	width: 100vw;
 	height: auto;
