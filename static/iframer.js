@@ -1,4 +1,4 @@
-/*global document: false, App: false */
+/*global document, App */
 (function (document, App) {
 	"use strict";
 	if (typeof App.data === "object" && App.data.hasOwnProperty("length")) {

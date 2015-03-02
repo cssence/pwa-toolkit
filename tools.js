@@ -33,7 +33,7 @@
 	mainController = require("./routes/main");
 	options.title = nconf.get("title");
 	app.get("/", mainController.renderAction("index", options));
-	app.get("/derefer/", mainController.renderAction("derefer", options));
+	//app.get("/derefer/", mainController.renderAction("derefer", options));
 	app.use(mainController.renderAction(404, options));
 
 	// Http server

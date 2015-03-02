@@ -1,4 +1,4 @@
-/*global document: false, App: false */
+/*global App */
 (function (document, App) {
 	"use strict";
 	if (typeof App.data === "object" && App.data.hasOwnProperty("length")) {
@@ -8,10 +8,7 @@
 			var li, a, img;
 			if (bookmark.url) {
 				li = document.createElement("li");
-				a = document.createElement("a");
-				a.title = bookmark.url;
-				a.href = "derefer?u=" + encodeURIComponent(bookmark.url);
-				a.target = "_blank";
+				a = App.makeLink(bookmark.url);
 				if (bookmark.icon) {
 					img = document.createElement("img");
 					img.src = bookmark.icon;

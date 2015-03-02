@@ -1,4 +1,4 @@
-/*global document: false, App: false */
+/*global document, App */
 (function (document, App) {
 	"use strict";
 	var	calendar,
@@ -123,10 +123,11 @@
 				});
 			}
 			addNode(event, "p", (entry.location || "").replace(/[\s\S]+/, function (text) {
-				return "<a href=\"derefer?u=" + encodeURIComponent("https://www.google.com/maps?q=" + encodeURIComponent(text)) + "\" target=\"_blank\">" + text + "</a>";
+				var url = "https://www.google.com/maps?q=" + encodeURIComponent(text);
+				return App.makeLink(url, {text: text}).outerHTML;
 			}), {className: "location", html: true});
 			addNode(event, "p", (entry.description || "").replace(/(https?)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/g, function (url) {
-				return "<a href=\"derefer?u=" + encodeURIComponent(url) + "\" target=\"_blank\">" + url + "</a>";
+				return App.makeLink(url, {text: url}).outerHTML;
 			}), {className: "description", html: true});
 			eventList.appendChild(event);
 		};

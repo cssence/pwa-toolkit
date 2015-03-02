@@ -1,7 +1,8 @@
-/*global atob: false */
-var App = {
-	load: function (id, url, callback) {
-		"use strict";
+/*global document, atob, btoa */
+var App = App || {};
+(function (App, document, atob, btoa) {
+	"use strict";
+	App.load = function (id, url, callback) {
 		var request, response;
 		if (url.indexOf("data:") === 0) {
 			request = url.split(",");
@@ -25,5 +26,22 @@ var App = {
 			};
 			request.send();
 		}
-	}
-};
+	};
+	App.makeLink = function (url, options) {
+		options = options || {};
+		options.derefer = typeof options.derefer === "undefined" || options.derefer;
+		var a = document.createElement("a");
+		if (options.derefer) {
+			a.rel = "noreferrer";
+			a.title = url;
+			a.href = "data:text/html;base64," + btoa("<html><head><meta http-equiv=refresh content=0;url=" + url + "></head></html>");
+			a.target = "_blank";
+		} else {
+			a.href = url;
+		}
+		if (options.text) {
+			a.textContent = options.text;
+		}
+		return a;
+	};
+}(App, document, atob, btoa));
