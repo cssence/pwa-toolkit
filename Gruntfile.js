@@ -2,25 +2,25 @@
 
 module.exports = function (grunt) {
 	"use strict";
+	var pkg = grunt.file.readJSON("package.json");
 
 	// Project configuration.
 	grunt.initConfig({
-		//pkg: grunt.file.readJSON("package.json"),
-		config: grunt.file.readJSON("settings.json"),
+		pkg: pkg,
 
 		// clean staging directory
 		clean: {
-			build: ["<%= config.paths.stage %>"]
+			build: ["<%= pkg.config.folders.temp %>"]
 		},
 
 		// minify and concatenate css
 		cssmin: {
 			css: {
 				files: {
-					'<%= config.paths.dist %>/bookmarks.css': ['static/bookmarks.css'],
-					'<%= config.paths.dist %>/calendar.css': ['static/calendar.css'],
-					'<%= config.paths.dist %>/iframer.css': ['static/iframer.css'],
-					'<%= config.paths.stage %>/init.min.css': ['static/init.css']
+					"<%= pkg.config.folders.dist %>/bookmarks.css": ["<%= pkg.config.folders.assets %>/bookmarks.css"],
+					"<%= pkg.config.folders.dist %>/calendar.css": ["<%= pkg.config.folders.assets %>/calendar.css"],
+					"<%= pkg.config.folders.dist %>/iframer.css": ["<%= pkg.config.folders.assets %>/iframer.css"],
+					"<%= pkg.config.folders.temp %>/init.min.css": ["<%= pkg.config.folders.assets %>/init.css"]
 				}
 			}
 		},
@@ -29,10 +29,10 @@ module.exports = function (grunt) {
 		uglify: {
 			js: {
 				files: {
-					"<%= config.paths.dist %>/bookmarks.js": ["static/bookmarks.js"],
-					"<%= config.paths.dist %>/calendar.js": ["static/calendar.js"],
-					"<%= config.paths.dist %>/iframer.js": ["static/iframer.js"],
-					"<%= config.paths.stage %>/index.min.js": ["static/init.js", "static/index.js"]
+					"<%= pkg.config.folders.dist %>/bookmarks.js": ["<%= pkg.config.folders.assets %>/bookmarks.js"],
+					"<%= pkg.config.folders.dist %>/calendar.js": ["<%= pkg.config.folders.assets %>/calendar.js"],
+					"<%= pkg.config.folders.dist %>/iframer.js": ["<%= pkg.config.folders.assets %>/iframer.js"],
+					"<%= pkg.config.folders.temp %>/index.min.js": ["<%= pkg.config.folders.assets %>/init.js", "<%= pkg.config.folders.assets %>/index.js"]
 				}
 			}
 		},
@@ -42,22 +42,13 @@ module.exports = function (grunt) {
 			compile: {
 				options: {
 					data: {
-						title: "<%= config.title %>"
+						title: pkg.name
 					}
 				},
 				files: {
-					"<%= config.paths.dist %>/index.html": ["views/index.jade"],
-					"<%= config.paths.dist %>/404.html": ["views/error.jade"]
+					"<%= pkg.config.folders.dist %>/index.html": ["<%= pkg.config.folders.views %>/index.jade"],
+					"<%= pkg.config.folders.dist %>/404.html": ["<%= pkg.config.folders.views %>/error.jade"]
 				}
-			}
-		},
-
-		// copy assets that are to-be-hosted
-		copy: {
-			assets: {
-				files: [
-					{src: "LICENSE", dest: "<%= config.paths.dist %>/LICENSE"}
-				]
 			}
 		}
 
@@ -68,17 +59,16 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-jade");
-	grunt.loadNpmTasks("grunt-contrib-copy");
 
 	grunt.registerTask(
 		"build",
-		"Prepares project deployment (minification)",
-		["clean:build", "cssmin:css", "uglify:js"]
+		"Prepare project deployment",
+		["clean", "cssmin", "uglify"]
 	);
 	grunt.registerTask(
 		"release",
-		"Deploys the project (copy assets and generate HTML)",
-		["clean:build", "cssmin:css", "uglify:js", "jade:compile", "copy:assets"]
+		"Deploy the project",
+		["build", "jade"]
 	);
 
 	// Default task(s).

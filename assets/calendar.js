@@ -112,16 +112,13 @@
 			event.className = "event " + type;
 			details.time = (entry.due || entry.start).slice(11, 16);
 			addNode(event, "time", details.time);
-			event.appendChild(document.createTextNode((details.time ? " " : "") + entry.name + " "));
-			if (entry.tags) {
-				if (typeof entry.tags !== "object" || !entry.tags.length) {
-					entry.tags = [entry.tags.toString()];
+			details.name = entry.name.split(" ");
+			details.name.forEach(function (word, index) {
+				if (word && ["#", "@", "+"].indexOf(word.charAt(0)) !== -1) {
+					details.name[index] = "<i class=tag title=" + word + ">" + word.slice(1) + "</i>";
 				}
-				details.tags = addNode(event, "ul", true, {className: "tags"});
-				entry.tags.forEach(function (tag) {
-					addNode(details.tags, "li", tag, {className: "tag", title: tag});
-				});
-			}
+			});
+			event.innerHTML += " " + details.name.join(" ");
 			addNode(event, "p", (entry.location || "").replace(/[\s\S]+/, function (text) {
 				var url = "https://www.google.com/maps?q=" + encodeURIComponent(text);
 				return App.makeLink(url, {text: text}).outerHTML;
@@ -139,14 +136,14 @@
 		});
 		addEvents(App.data.birthdays, "start", function (entry) {
 			var dt, yearOfBirth;
-			entry.tags = [-1].concat(entry.tags || []);
+			entry.name += " #";
 			["last", "this", "next"].forEach(function (year) {
 				year = index.year[year];
 				dt = entry.start.split("-");
 				yearOfBirth = parseInt(dt[0], 10);
 				dt[0] = year;
 				day = document.querySelector("[data-date='" + dt.join("-") + "']");
-				entry.tags[0] = year - yearOfBirth;
+				entry.name = entry.name.slice(0, entry.name.lastIndexOf("#") + 1) + (year - yearOfBirth);
 				addEvent(day, "birthday", entry);
 			});
 		});

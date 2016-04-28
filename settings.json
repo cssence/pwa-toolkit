@@ -1,7 +1,0 @@
-{
-	"title": "#toolbox",
-	"paths": {
-		"stage": "build",
-		"dist": "public"
-	}
-}

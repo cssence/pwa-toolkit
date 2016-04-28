@@ -69,24 +69,24 @@ a:hover {
 }
 .event + .event { margin-left: -1.5vw; }
 .event:nth-child(5) ~ .event { display: none; }
-.birthday::after,
-.birthday .tag { background-color: #ff8f00; }
-.task::after,
-.task .tag { background-color: #bada55; }
-.tags { display: inline; }
 .tag {
 	display: inline-block;
-	margin-right: 0.5ex;
 	padding: 0 0.5ex;
 	background: #5fd3fb;
 	font-size: 75%;
+	font-style: normal;
 	white-space: nowrap;
 }
-.tag[title^="@"] { background: #ccc; color: #000; }
-.tag[title*="!"] { background: #ff3b30; }
+.task::after,
+.tag[title^="+"] { background-color: #bada55; }
+.birthday::after,
+.tag[title^="@"] { background-color: #ff8f00; }
+.tag[title*="!"] { background-color: #ff3b30; }
+.birthday .tag:last-child,
+time { background-color: #000; }
 time,
 .tag { padding-top: 0.25vw; border-radius: 1vw; color: #fff; }
-time { display: inline-block; width: 6ex; background: #000; border: 1px solid transparent; text-align: center; }
+time { display: inline-block; width: 6ex; border: 1px solid transparent; text-align: center; }
 .location,
 .description { margin-top: 0.333rem; color: #ccc; font-size: 75%; }
 
