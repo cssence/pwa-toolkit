@@ -1,4 +1,5 @@
 doctype html
+include mixins
 html(lang="en")
 	head
 		meta(charset="utf-8")
@@ -7,16 +8,9 @@ html(lang="en")
 				title= title
 		meta(name="viewport", content="width=device-width,initial-scale=1.0")
 		block styles
-			if verbose
-				link(rel="stylesheet", href="/init.css")
-			else
-				style
-					include ../build/init.min.css
+			+style("init.css")
 		block icons
-			if verbose
-				link(rel="icon", sizes="16x16", href="/index.gif")
-			else
-				link(rel="icon", sizes="16x16", href="data:image/gif;base64,R0lGODlhEAAQAKECAAAAANNLbP///////yH5BAEKAAIALAAAAAAQABAAAAIglI9pIOwNmZqr0oulxDzp3gUiRCpiAJ7kBnZfG8UPCxYAOw==")
+			link(rel="icon", sizes="16x16", type="image/gif", href="data:image/gif;base64,R0lGODlhEAAQAKECAAAAANNLbP///////yH5BAEKAAIALAAAAAAQABAAAAIglI9pIOwNmZqr0oulxDzp3gUiRCpiAJ7kBnZfG8UPCxYAOw==")
 	body
 		block content
 		block scripts

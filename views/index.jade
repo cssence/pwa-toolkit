@@ -1,9 +1,4 @@
 extends ./layout.jade
 
 append scripts
-	if verbose
-		script(src="/init.js")
-		script(src="/index.js")
-	else
-		script
-			include ../build/index.min.js
+	+script(["init.js", "index.js"])

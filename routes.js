@@ -4,8 +4,9 @@ var path = require("path");
 
 module.exports = function (pkg) {
 	var notFound = function (req, res) {
-		res.render("error.jade", {
-			verbose: pkg.config.verbose
+		res.render("404.jade", {
+			path: req.path,
+			build: pkg.config.build
 		}, function (err, html) {
 			if (err) {
 				console.error(err);
@@ -23,9 +24,9 @@ module.exports = function (pkg) {
 		render: function (req, res) {
 			var template = (req.path.slice(1) || "index") + ".jade";
 			res.render(template, {
+				title: pkg.name,
 				path: req.path,
-				verbose: pkg.config.verbose,
-				title: pkg.title
+				build: pkg.config.build
 			}, function (err, html) {
 				if (err) {
 					console.log(err);
@@ -34,6 +35,9 @@ module.exports = function (pkg) {
 					res.send(html);
 				}
 			});
+		},
+		errorRedirect: function (req, res) {
+			res.redirect(404, "/404.html");
 		},
 		error: notFound
 	};

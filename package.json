@@ -1,30 +1,29 @@
 {
   "name": "tools",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "license": "CC-BY-4.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/cssence/tools.git"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "build": "node app.js build",
+    "http-server": "node app.js live"
   },
   "config": {
     "folders": {
       "assets": "assets",
       "views": "views",
-      "temp": "build",
       "dist": "public"
     }
   },
   "devDependencies": {
+    "async": "^1.5.2",
+    "cssnano": "^3.5.2",
     "express": "^4.13.4",
-    "grunt": "^1.0.1",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-cssmin": "^1.0.1",
-    "grunt-contrib-jade": "^1.0.0",
-    "grunt-contrib-uglify": "^1.0.1",
     "jade": "^1.11.0",
-    "serve-static": "^1.10.2"
+    "serve-static": "^1.10.2",
+    "uglify-js": "^2.6.2"
   }
 }

@@ -2,27 +2,43 @@
 "use strict";
 var path = require("path");
 
-var pkg = require("./package.json");
+var dist = process.argv[2];
+
+var pkg = require(path.join(__dirname, "package.json"));
 pkg.config = pkg.config || {};
 pkg.config.port = process.env.PORT || pkg.config.port || 8080;
-pkg.config.environment = (process.env.ENV || pkg.config.enviroment || "development").toLowerCase();
-pkg.config.verbose = pkg.config.environment === "development";
 
 var app = require("express")();
-var serveStatic = require("serve-static");
 var routes = require(path.join(__dirname, "routes.js"))(pkg);
+var serveStatic = require("serve-static");
 app.set("port", pkg.config.port);
 app.all("*", routes.log);
-if (!pkg.config.verbose) {
-	app.use(serveStatic(pkg.config.folders.temp, {index: false}));
+if (dist) {
+	app.use(serveStatic(pkg.config.folders.dist, { extensions: ["html"] }));
+	app.use(routes.errorRedirect);
+} else {
+	app.use(serveStatic(pkg.config.folders.assets, { index: false }));
+	app.locals.basedir = pkg.config.folders.views;
+	app.set("views", pkg.config.folders.views);
+	app.set("view engine", "jade");
+	app.get("*", routes.render);
+	app.use(routes.error);
 }
-app.use(serveStatic(pkg.config.folders.assets, {index: false}));
-app.locals.basedir = pkg.config.folders.views;
-app.set("views", pkg.config.folders.views);
-app.set("view engine", "jade");
-app.get("*", routes.render);
-app.use(routes.error);
 
-require("http").createServer(app).listen(pkg.config.port, function () {
-	console.info("Express %s server listening on port %d", pkg.config.environment, pkg.config.port);
-});
+var server = function () {
+	require("http").createServer(app).listen(pkg.config.port, function () {
+		console.info("Express %s server listening on port %d", dist || "development", pkg.config.port);
+	});
+};
+if (dist) {
+	if (dist.toLowerCase() === "build") {
+		server = function () {
+			console.log("Build complete.");
+		};
+	}
+	require(path.join(__dirname, "minify.js"))(pkg, function () {
+		require(path.join(__dirname, "build.js"))(pkg, server);
+	});
+} else {
+	server();
+}

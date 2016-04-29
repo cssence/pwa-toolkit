@@ -1,0 +1,22 @@
+//- add stylesheet(s)
+mixin style(files)
+	- if (typeof files === "string") { files = [files]; }
+	if build
+		style
+			each file in files
+				!= build[file]
+	else
+		each file in files
+			link(rel="stylesheet", href=file)
+
+//- add script(s)
+mixin script(files)
+	- if (typeof files === "string") { files = [files]; }
+	if build
+		script
+			each file, sep in files
+				= sep ? ";" : ""
+				!= build[file]
+	else
+		each file in files
+			script(src=file)
