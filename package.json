@@ -15,7 +15,7 @@
     "folders": {
       "assets": "assets",
       "views": "views",
-      "dist": "public"
+      "dist": "docs"
     }
   },
   "devDependencies": {
