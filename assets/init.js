@@ -34,7 +34,7 @@ var App = App || {};
 		if (options.derefer) {
 			a.rel = "noreferrer";
 			a.title = url;
-			a.href = "data:text/html;base64," + btoa("<html><head><meta http-equiv=refresh content=0;url=" + url + "></head></html>");
+			a.href = "data:text/html;base64," + btoa("<meta http-equiv=refresh content=0;url=" + url + ">");
 			a.target = "_blank";
 		} else {
 			a.href = url;
