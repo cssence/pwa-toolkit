@@ -21,7 +21,7 @@
 				})
 			);
 		} else {
-			const mediaCacheName = "media-" + new URL(request.referrer).pathname.split("/")[1];
+			const mediaCacheName = "media";
 			event.respondWith(
 				caches.open(mediaCacheName).then(cache => {
 					return cache.match(request).then(response => response || fetch(request).then(response => {
