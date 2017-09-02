@@ -1,0 +1,33 @@
+doctype html
+html(lang="en")
+	head
+		meta(charset="utf-8")
+		block title
+			title= manifest.name
+		meta(name="viewport", content="width=device-width,initial-scale=1.0")
+		block styles
+			link(rel="stylesheet", href="../all.css?inline")
+			link(rel="stylesheet", href=".."+path+".css?inline")
+		link(rel="apple-touch-icon", type="image/png", sizes="180x180", href="apple-touch-icon.png")
+		link(rel="icon", type="image/png", sizes="16x16", href="favicon-16x16.png")
+		link(rel="icon", type="image/png", sizes="32x32", href="favicon-32x32.png")
+		link(rel="manifest", href="manifest.json")
+		meta(name="msapplication-config", content="browserconfig.xml")
+		link(rel="canonical", href=manifest.start_url)
+	block structure
+		- var bodyStructure = {"header": "default", "main": "default"}
+	body(class=Object.keys(bodyStructure).join(" "))
+		block header
+			header
+				.banner
+					h1= manifest.name
+					button.action.action--modify-source Source
+				.source
+					button.action.action--back Back
+					input.source-url(type="text", placeholder="URL of a JSON file")
+					button.action.action--update Update
+		block content
+			main.content
+		block footer
+		block scripts
+			script(src=".."+path+".js?inline")

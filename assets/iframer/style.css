@@ -1,0 +1,22 @@
+html {
+	background: #fff;
+	font: 5vw/1.25 sans-serif;
+	color: #000;
+}
+@media (orientation: landscape) {
+	html {
+		background: #000;
+		color: #fff;
+	}
+}
+body {
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+}
+iframe {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: none;
+}

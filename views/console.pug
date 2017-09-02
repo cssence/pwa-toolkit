@@ -1,0 +1,18 @@
+extends template
+
+append structure
+	- bodyStructure["footer"] = "input"
+
+block header
+	header
+		.banner
+			h1= manifest.name
+			button.action.action--clear Clear log
+
+block content
+	main.content
+		noscript Note: This application requires JavaScript.
+
+block footer
+	footer
+		input(type="text")

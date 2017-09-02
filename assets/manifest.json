@@ -1,0 +1,15 @@
+{
+	"lang": "en",
+	"start_url": "{{path}}/",
+	"scope": "{{path}}/",
+	"short_name": "{{name}}",
+	"name": "{{name}}",
+	"icons": [
+		{"src": "android-chrome-192x192.png", "type": "image/png", "sizes": "192x192"},
+		{"src": "android-chrome-512x512.png", "type": "image/png", "sizes": "512x512"}
+	],
+	"display": "{{mode}}",
+	"background_color": "{{background}}",
+	"theme_color": "#202225",
+	"version": "1.0"
+}

@@ -1,29 +1,31 @@
 {
-  "name": "tools",
-  "version": "2.0.0",
+  "name": "pwa-toolkit",
+  "version": "1.0",
   "license": "CC-BY-4.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cssence/tools.git"
+    "url": "git://github.com/cssence/pwa-toolkit.git"
   },
   "scripts": {
-    "start": "node app.js",
-    "build": "node app.js build",
-    "http-server": "node app.js live"
+    "build": "grunt build"
   },
   "config": {
     "folders": {
       "assets": "assets",
       "views": "views",
-      "dist": "docs"
+      "dist": "public"
     }
   },
-  "devDependencies": {
-    "async": "^1.5.2",
-    "cssnano": "^3.5.2",
-    "express": "^4.13.4",
-    "jade": "^1.11.0",
-    "serve-static": "^1.10.2",
-    "uglify-js": "^2.6.2"
+  "dependencies": {
+    "cssnano": "^3.10.0",
+    "grunt": "^0.4.5",
+    "grunt-assets-inline": "^0.1.19",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^0.7.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-pug": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.2",
+    "grunt-postcss": "^0.7.2",
+    "pug": "^2.0.0-rc.3"
   }
 }
