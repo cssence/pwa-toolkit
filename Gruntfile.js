@@ -7,15 +7,14 @@ module.exports = function (grunt) {
 		{"path": "/console", "name": "Console", "view": "console.pug", "background": "#000000"},
 		{"path": "/bookmarks", "name": "Bookmarks"},
 		{"path": "/calendar", "name": "Calendar"},
+		{"path": "/notepad", "name": "Notepad", "view": "notepad.pug"},
 		{"path": "/404", "name": "Blank™", "view": "404.pug", "background": "#000000", "mode": "fullscreen"}
 	];
 	pkg.config.minify = {};
 	pkg.config.minify[pkg.config.folders.dist + "/all.css"] = [pkg.config.folders.assets + "/all.css"];
 	pkg.config.uglify = {};
 	pkg.config.render = {};
-	pkg.config.render[pkg.config.folders.dist + "/404.html"] = [pkg.config.folders.views + "/index.pug"];
 	pkg.config.inline = {};
-	pkg.config.inline[pkg.config.folders.dist + "/404.html"] = [pkg.config.folders.dist + "/404.html"];
 	pkg.config.copysw = {};
 	pkg.config.browserconfig = grunt.file.read(pkg.config.folders.assets + "/browserconfig.xml").replace(/[\t\n]/g, "");
 	pkg.config.manifest = grunt.file.read(pkg.config.folders.assets + "/manifest.json");
@@ -99,7 +98,7 @@ module.exports = function (grunt) {
 				files: [{
 					expand: true,
 					cwd: pkg.config.folders.assets,
-					src: ["**/README.md"],
+					src: ["**/README.md", "404.md"],
 					dest: pkg.config.folders.dist
 				}]
 			},
