@@ -17,6 +17,8 @@ textarea {
 }
 pre {
 	overflow: auto;
+	white-space: pre-line;
+	overflow-wrap: break-word;
 }
 .edit pre,
 textarea {
@@ -27,6 +29,7 @@ textarea {
 	resize: none;
 	outline: none;
 }
-a {
+pre a {
 	color: #00f;
+	overflow-wrap: break-word;
 }
