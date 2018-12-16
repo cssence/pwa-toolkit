@@ -14,9 +14,7 @@ html(lang="en")
 		link(rel="manifest", href="manifest.json")
 		meta(name="msapplication-config", content="browserconfig.xml")
 		link(rel="canonical", href=manifest.start_url)
-	block structure
-		- var bodyStructure = {"header": "default", "main": "default"}
-	body(class=Object.keys(bodyStructure).join(" "))
+	body
 		block header
 			header
 				.banner

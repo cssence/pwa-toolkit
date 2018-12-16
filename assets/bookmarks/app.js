@@ -29,7 +29,6 @@
 					a = document.createElement("a");
 					a.href = bookmark.url;
 					a.rel = "noreferrer";
-					a.target = "_blank";
 					if (bookmark.icon) {
 						img = document.createElement("img");
 						img.src = bookmark.icon;

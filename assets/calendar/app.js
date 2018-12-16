@@ -24,9 +24,9 @@
 			day,
 			marker,
 			index = {},
-			addEvents,
-			addEvent,
-			START_WEEK = 1,//Monday
+			addAppointments,
+			addAppointment,
+			START_WEEK = 1, //Monday
 			DAYS_IN_WEEK = 7,
 			now = new Date();
 		calendar = document.createElement("table");
@@ -81,9 +81,13 @@
 		parent.addEventListener("click", function (event) {
 			var dayExpanded, day;
 			dayExpanded = document.querySelector("[aria-expanded]");
-			Array.prototype.forEach.call(event.path, function (element) {
-				day = day || (typeof element.getAttribute === "function" && element.getAttribute("data-date") && element);
-			});
+			day = event.target;
+			while (!day.getAttribute("data-date")) {
+				if (day.tagName.toLowerCase() === "main") {
+					return;
+				}
+				day = day.parentElement;
+			}
 			if (day !== dayExpanded) {
 				if (dayExpanded) {
 					dayExpanded.removeAttribute("aria-expanded");
@@ -104,18 +108,18 @@
 			if (!data || typeof data !== "object") {
 				return;
 			}
-			addEvents = function (events, datePick, todo) {
-				(events || []).forEach(function (entry) {
+			addAppointments = function (appointments, datePick, todo) {
+				(appointments || []).forEach(function (entry) {
 					if (entry[datePick]) {
 						todo(entry);
 					}
 				});
 			};
-			addEvent = function (day, type, entry) {
+			addAppointment = function (day, type, entry) {
 				if (!day) {
 					return;
 				}
-				var eventList, event, addNode, details = {};
+				var appointmentList, appointment, addNode, details = {};
 				addNode = function (parentNode, tagName, text, options) {
 					var node;
 					options = options || {};
@@ -133,34 +137,34 @@
 					}
 					return node;
 				};
-				eventList = day.querySelector("ul") || addNode(day, "ul", true, {className: "events"});
-				event = document.createElement("li");
-				event.className = "event " + type;
+				appointmentList = day.querySelector("ul") || addNode(day, "ul", true, {className: "events"});
+				appointment = document.createElement("li");
+				appointment.className = "event " + type;
 				details.time = (entry.due || entry.start).slice(11, 16);
-				addNode(event, "time", details.time);
+				addNode(appointment, "time", details.time);
 				details.name = entry.name.split(" ");
 				details.name.forEach(function (word, index) {
 					if (word && ["#", "@", "+"].indexOf(word.charAt(0)) !== -1) {
 						details.name[index] = "<i class=tag title=" + word + ">" + word.slice(1) + "</i>";
 					}
 				});
-				event.innerHTML += " " + details.name.join(" ");
-				addNode(event, "p", (entry.location || "").replace(/[\s\S]+/, function (text) {
+				appointment.innerHTML += " " + details.name.join(" ");
+				addNode(appointment, "p", (entry.location || "").replace(/[\s\S]+/, function (text) {
 					var url = "https://www.google.com/maps?q=" + encodeURIComponent(text);
 					return makeLink(url, {text: text}).outerHTML;
 				}), {className: "location", html: true});
-				addNode(event, "p", (entry.description || "").replace(/(https?)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/g, function (url) {
+				addNode(appointment, "p", (entry.description || "").replace(/(https?)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/g, function (url) {
 					return makeLink(url, {text: url}).outerHTML;
 				}), {className: "description", html: true});
-				eventList.appendChild(event);
+				appointmentList.appendChild(appointment);
 			};
-			addEvents(data.holidays, "start", function (entry) {
+			addAppointments(data.holidays, "start", function (entry) {
 				day = document.querySelector("[data-date='" + entry.start + "']");
 				if (day) {
 					day.setAttribute("data-public-holiday", entry.name || "");
 				}
 			});
-			addEvents(data.birthdays, "start", function (entry) {
+			addAppointments(data.birthdays, "start", function (entry) {
 				var dt, yearOfBirth;
 				entry.name += " #";
 				["last", "this", "next"].forEach(function (year) {
@@ -170,16 +174,16 @@
 					dt[0] = year;
 					day = document.querySelector("[data-date='" + dt.join("-") + "']");
 					entry.name = entry.name.slice(0, entry.name.lastIndexOf("#") + 1) + (year - yearOfBirth);
-					addEvent(day, "birthday", entry);
+					addAppointment(day, "birthday", entry);
 				});
 			});
-			addEvents(data.events, "start", function (entry) {
+			addAppointments(data.appointments, "start", function (entry) {
 				day = document.querySelector("[data-date='" + entry.start.slice(0, 10) + "']");
-				addEvent(day, "simplified", entry);
+				addAppointment(day, "simplified", entry);
 			});
-			addEvents(data.tasks, "due", function (entry) {
+			addAppointments(data.tasks, "due", function (entry) {
 				day = document.querySelector("[data-date='" + entry.due.slice(0, 10) + "']");
-				addEvent(day, "task", entry);
+				addAppointment(day, "task", entry);
 			});
 		});
 	};

@@ -7,6 +7,7 @@ module.exports = function (grunt) {
 		{"path": "/console", "name": "Console", "view": "console.pug", "background": "#000000"},
 		{"path": "/bookmarks", "name": "Bookmarks"},
 		{"path": "/calendar", "name": "Calendar"},
+		{"path": "/contacts", "name": "Contacts"},
 		{"path": "/notepad", "name": "Notepad", "view": "notepad.pug"},
 		{"path": "/404", "name": "Blank™", "view": "404.pug", "background": "#000000", "mode": "fullscreen"}
 	];

@@ -100,7 +100,7 @@ time,
 .tag { padding-top: 0.25vw; border-radius: 1vw; color: #fff; }
 time { display: inline-block; width: 6ex; border: 1px solid transparent; text-align: center; }
 .location,
-.description { margin-top: 0.333rem; color: #ccc; font-size: 75%; }
+.description { margin-top: 0.333rem; color: rgba(0,0,0,.4); font-size: 75%; }
 
 [aria-expanded="true"] .events {
 	width: 100vw;
