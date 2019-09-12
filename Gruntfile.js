@@ -6,6 +6,7 @@ module.exports = function (grunt) {
 	pkg.config.data = [
 		{"path": "/console", "name": "Console", "view": "console.pug", "background": "#000000"},
 		{"path": "/bookmarks", "name": "Bookmarks"},
+		{"path": "/calculator", "name": "Calculator", "view": "calculator.pug"},
 		{"path": "/calendar", "name": "Calendar"},
 		{"path": "/contacts", "name": "Contacts"},
 		{"path": "/notepad", "name": "Notepad", "view": "notepad.pug"},
@@ -17,17 +18,14 @@ module.exports = function (grunt) {
 	pkg.config.render = {};
 	pkg.config.inline = {};
 	pkg.config.copysw = {};
-	pkg.config.browserconfig = grunt.file.read(pkg.config.folders.assets + "/browserconfig.xml").replace(/[\t\n]/g, "");
 	pkg.config.manifest = grunt.file.read(pkg.config.folders.assets + "/manifest.json");
 	pkg.config.data.forEach(function (data) {
-		data.browserconfig = pkg.config.browserconfig;
 		data.manifest = JSON.parse(pkg.config.manifest.replace(/\{\{path\}\}/g, data.path).replace(/\{\{name\}\}/g, data.name).replace(/\{\{mode\}\}/g, data.mode || "standalone").replace(/\{\{background\}\}/g, data.background || "#202225"));
 		var base = pkg.config.folders.dist + data.path;
 		pkg.config.minify[base + ".css"] = [pkg.config.folders.assets + data.path + "/style.css"];
 		pkg.config.uglify[base + ".js"] = [pkg.config.folders.assets + data.path + "/app.js"];
 		pkg.config.copysw[base + "/sw.js"] = [pkg.config.folders.assets + "/sw.js"];
 		pkg.config.render[base + "/index.html"] = pkg.config.folders.views + "/" + (data.view || "template.pug");
-		pkg.config.render[base + "/browserconfig.xml"] = pkg.config.folders.views + "/browserconfig.pug";
 		pkg.config.render[base + "/manifest.json"] = pkg.config.folders.views + "/manifest.pug";
 		pkg.config.inline[base + "/index.html"] = base + "/index.html";
 	});
@@ -71,7 +69,7 @@ module.exports = function (grunt) {
 				files: pkg.config.render
 			}
 		},
-		
+
 		// assets inline
 		assets_inline: {
 			html: {
@@ -84,7 +82,7 @@ module.exports = function (grunt) {
 				files: pkg.config.inline
 			},
 		},
-		
+
 		// copy files without modification
 		copy: {
 			root: {
@@ -107,7 +105,7 @@ module.exports = function (grunt) {
 				files: [{
 					expand: true,
 					cwd: pkg.config.folders.assets,
-					src: ["**/*.png", "!calculator/*.png", "!iframer/*.png", "!settings/*.png"],
+					src: ["**/*.png", "!iframer/*.png", "!settings/*.png"],
 					dest: pkg.config.folders.dist
 				}]
 			},

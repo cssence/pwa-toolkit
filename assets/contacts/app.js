@@ -65,10 +65,13 @@
 				}
 			});
 			document.querySelector(".contacts").addEventListener("click", function (event) {
-				var href;
-				event.path.forEach(function (target) {
-					href = href || target.getAttribute("href");
-				});
+				var href = (function getRef(target) {
+					var found = target.getAttribute("href");
+					while (!found) {
+						target = target.parentElement;
+					}
+					return found;
+				})(event.target);
 				if (!href) {
 					return false;
 				}

@@ -30,7 +30,6 @@ html {
 }
 header,
 footer {
-	position: -webkit-sticky;
 	position: sticky;
 	overflow: hidden;
 	z-index: 5;
@@ -75,10 +74,10 @@ a {
 	white-space: nowrap;
 	outline: none;
 }
-header .action:first-child {
+.banner .action:first-child {
 	margin-left: -.5em;
 }
-header .action:last-child {
+.banner .action:last-child {
 	margin-right: -.5em;
 }
 .action--modify-source {
@@ -94,19 +93,16 @@ header .action:last-child {
 	min-height: calc(100vh - 7em);
 	padding: 1em;
 }
+::placeholder {
+	color: rgba(0,0,0,.3);
+	opacity: 1;
+}
 input {
 	background: transparent;
-	border-bottom: 1px solid rgba(0,0,0,.3);
+	border: none;
 	color: inherit;
 	font: inherit;
-	line-height: inherit;
 	outline: none;
-}
-input:focus {
-	border-bottom-color: #202225;
-}
-input:placeholder-shown {
-	color: rgba(0,0,0,.3);
 }
 .source {
 	background: #fff;
@@ -115,6 +111,10 @@ input:placeholder-shown {
 .source-url {
 	height: 2em;
 	width: calc(100vw - 8em);
+	border-bottom: 1px solid rgba(0,0,0,.3);
+}
+.source-url:focus {
+	border-bottom-color: #202225;
 }
 header.show-source .banner,
 header:not(.show-source) .source {
