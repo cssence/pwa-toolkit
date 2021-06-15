@@ -1,0 +1,5 @@
+s|{{ name }}|Calculator|g
+s|{{ path }}|calculator|g
+s|{{ mode }}|standalone|
+s|{{ background }}|#202225|
+s|{{ content }}|<header><div class="banner"><h1>Calculator</h1><button class="action action--clear">Clear log</button></div></header><main><noscript>Note: This application requires JavaScript.</noscript></main><footer><form class="banner" action="." method="get"><input type="text" placeholder="0"><button class="action action--submit" type="submit">Calculate</button><button class="action action--reset" type="reset">Reset</button></form></footer>|

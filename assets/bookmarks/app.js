@@ -18,7 +18,7 @@
 			if (typeof data !== "object" || !data.hasOwnProperty("length")) {
 				return;
 			}
-			var parent = document.querySelector(".content");
+			var parent = document.querySelector("main");
 			var ul = document.createElement("ul");
 			parent.innerHTML = "";
 			parent.appendChild(ul);

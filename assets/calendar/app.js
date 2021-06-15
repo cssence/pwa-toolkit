@@ -70,7 +70,7 @@
 				calendar.appendChild(week);
 			}
 		}
-		var parent = document.querySelector(".content");
+		var parent = document.querySelector("main");
 		parent.innerHTML = "";
 		parent.appendChild(calendar);
 		var scroll2Today = function () {

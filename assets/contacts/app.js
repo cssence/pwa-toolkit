@@ -33,7 +33,7 @@
 				}
 				return element;
 			};
-			var container = document.querySelector(".content");
+			var container = document.querySelector("main");
 			container.innerHTML = "";
 			var nav = makeElement("nav", {
 				"class": "contacts"
@@ -147,7 +147,7 @@
 					"class": "action action--close",
 				}));
 				document.body.classList.toggle("show-details");
-				document.querySelector(".content").appendChild(details);
+				document.querySelector("main").appendChild(details);
 				//window.scrollTo(0, 0);
 				document.querySelector(".action--close").addEventListener("click", function (event) {
 					document.querySelector(".details").remove();

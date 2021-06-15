@@ -7,7 +7,12 @@
 	self.addEventListener("install", event => {
 		event.waitUntil(
 			caches.open(assetCacheName)
-				.then(cache => cache.add("./"))
+				.then(cache => cache.addAll([
+					"./",
+					"./all.css",
+					"./style.css",
+					"./app.js",
+				]))
 		);
 	});
 

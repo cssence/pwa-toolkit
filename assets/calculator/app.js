@@ -1,10 +1,10 @@
 (function (window, document, navigator) {
 	"use strict";
 	// prepare log
-	document.querySelector(".content").innerHTML = "<ul></ul>";
+	document.querySelector("main").innerHTML = "<ul></ul>";
 	// add action button events
 	document.querySelector(".action--clear").addEventListener("click", function (event) {
-		document.querySelector(".content ul").innerHTML = "";
+		document.querySelector("main ul").innerHTML = "";
 	});
 	// document.querySelector(".action--toggle-keyboard").addEventListener("click", function (event) {
 	// 	var input = document.querySelector("input");
@@ -46,7 +46,7 @@
 				historyItem.textContent = result;
 			}
 		}
-		document.querySelector(".content ul").append(historyItem);
+		document.querySelector("main ul").append(historyItem);
 		historyItem.scrollIntoView();
 		input.focus();
 	});

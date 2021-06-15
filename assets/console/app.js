@@ -26,10 +26,10 @@
 		swOutput.className = "warning";
 		swOutput.textContent = "ServiceWorker cannot be registered, minimum browser requirements not met";
 	}
-	document.querySelector(".content").append(swOutput);
+	document.querySelector("main").append(swOutput);
 	// add action button events
 	document.querySelector(".action--clear").addEventListener("click", function (event) {
-		document.querySelector(".content").innerHTML = "";
+		document.querySelector("main").innerHTML = "";
 	});
 	// manage text input
 	document.querySelector("input").addEventListener("keypress", function (event) {
@@ -42,7 +42,7 @@
 				evalOutput.className = "error";
 				evalOutput.textContent = err;
 			}
-			document.querySelector(".content").append(evalOutput);
+			document.querySelector("main").append(evalOutput);
 			evalOutput.scrollIntoView();
 			event.target.select();
 		}

@@ -1,0 +1,5 @@
+s|{{ name }}|Notepad|g
+s|{{ path }}|notepad|g
+s|{{ mode }}|standalone|
+s|{{ background }}|#202225|
+s|{{ content }}|<header><div class="banner"><h1>Notepad</h1><button class="action action--toggle">Update</button></div></header><main><pre></pre><textarea></textarea></main>|
