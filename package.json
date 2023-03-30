@@ -1,13 +1,12 @@
 {
   "name": "pwa-toolkit",
-  "version": "2.0.0-alpha",
+  "version": "2.0.0-beta",
   "license": "CC-BY-4.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/cssence/pwa-toolkit.git"
   },
   "scripts": {
-    "build": "./build.sh",
     "start": "http-server -c-1 -p 3000"
   }
 }

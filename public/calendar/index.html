@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Calendar</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="/init.css">
+<style>
+#content{position:relative}
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	font-size: 5vw;
+}
+a {
+	color: #00f;
+}
+a:hover {
+	text-decoration-style: double;
+}
+[data-day] {
+	width: calc(1 / 7 * 100vw);
+	height: calc(1 / 7 * 100vw);
+	background: #fff;
+	color: #000;
+	text-align: center;
+	vertical-align: top;
+}
+[data-day]::before {
+	content: attr(data-day);
+	display: block;
+	width: calc(1 / 7 * 70vw);
+	height: calc(1 / 7 * 70vw);
+	margin: calc(1 / 7 * 10vw) auto calc(-1 / 7 * 25vw);
+	border: 1vw solid transparent;
+	border-radius: 50%;
+	line-height: calc(1 / 7 * 75vw - 2vw);
+}
+[data-month]::after {
+	content: attr(data-month);
+	display: block;
+	margin-top: calc(-1 / 7 * 75vw);
+	font-size: 50%;
+}
+[data-month]#today::after {
+	color: #fff;
+	text-shadow: -1px 0 #ff3b30, 0 -1px #ff3b30, 1px 0 #ff3b30;
+}
+.alternate { background: #f6f6f6; }
+.weekend { color: #999; }
+[data-public-holiday] { color: #ff3b30; }
+[aria-expanded="true"]::before { border-color: #f6f6f6; }
+[aria-expanded="true"].alternate::before { border-color: #fff; }
+#today::before { background-color: #ff3b30; color: #fff; }
+.events {
+	position: absolute;
+	display: block;
+	width: calc(1 / 7 * 100vw);
+	height: 3vw;
+	color: #000;
+}
+.event {
+	position: relative;
+	display: inline-block;
+	width: 3vw;
+	height: 3vw;
+	padding: 3vw 0 0;
+	text-align: left;
+	word-wrap: break-word;
+	overflow: hidden;
+}
+.event::after {
+	content: '';
+	position: absolute;
+	display: block;
+	width: 3vw;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: #5fd3fb;
+	border: 0.75vw solid #fff;
+	border-radius: 1.75vw;
+}
+.event + .event { margin-left: -1.5vw; }
+.event:nth-child(5) ~ .event { display: none; }
+time,
+.tag {
+	display: inline-block;
+	position: relative;
+	top: -.1ex;
+	padding: 0 0.5ex;
+	border-radius: 1vw;
+	color: #fff;
+	font-size: 75%;
+	white-space: nowrap;
+}
+time { font-variant-numeric: tabular-nums; }
+.tag { background-color: #777; font-style: normal;}
+.task::after,
+.tag[data-title^="+"] { background-color: #bada55; }
+.birthday::after,
+.tag[data-title^="@"] { background-color: #ff8f00; }
+.tag[data-title*="!"] { background-color: #ff3b30; }
+.anniversary::after { background-color: #cc6c00; }
+.tag[data-title*="*"],
+time { background-color: #000; }
+.location,
+.description { margin-top: 0.333rem; color: rgba(0,0,0,.4); font-size: 75%; }
+
+[aria-expanded="true"] .events {
+	width: 100vw;
+	height: auto;
+	z-index: 1;
+	left: 0;
+	border-top: 1px solid #e0e0e0;
+	box-shadow: 0 1px 2vw rgba(0,0,0,0.25);
+}
+[aria-expanded="true"] .event:nth-child(n) {
+	display: block;
+	width: auto;
+	height: auto;
+	left: auto;
+	margin-left: 0;
+	padding: 3vw 2vw 3vw 5vw;
+	background: #fff;
+	border-bottom: 1px solid #e0e0e0;
+	border-radius: 0;
+}
+[aria-expanded="true"] .event::after {
+	width: 1vw;
+	border: 0;
+	border-radius: 0;
+}
+[data-day]:not([aria-expanded="true"]):not(:empty) {
+	cursor: pointer;
+}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body><script type="module">
+import init from '/init.js';
+(async () => {
+	if (!('serviceWorker' in navigator)) return;
+	navigator.serviceWorker.register('/sw.js');
+	await init('calendar', 'Calendar');
+	const STORAGE_KEY = location.pathname;
+
+	const makeLink = (url, text) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${text}</a>`;
+	const index = {};
+	const START_WEEK = 1; // Monday
+	const DAYS_IN_WEEK = 7;
+	const now = new Date();
+	const calendar = document.createElement('table');
+	const marker = new Date(now);
+	index.year = {};
+	index.year['this'] = now.getFullYear();
+	index.year.last = index.year['this'] - 1;
+	index.year.next = index.year['this'] + 1;
+	index.week = {};
+	index.week['this'] = START_WEEK - now.getDay();
+	if (index.week['this'] > 0) {
+		index.week['this'] -= DAYS_IN_WEEK;
+	}
+	index.week.last = index.week['this'] - DAYS_IN_WEEK;
+	index.week.next = index.week['this'] + DAYS_IN_WEEK;
+	index.first = index.week['this'] - 5 * DAYS_IN_WEEK;
+	index.last = index.week.next - 1 + 50 * DAYS_IN_WEEK;
+	marker.setDate(now.getDate() + index.first);
+	let week;
+	for (index.current = index.first; index.current <= index.last; index.current += 1) {
+		if (marker.getDay() === START_WEEK) {
+			week = document.createElement('tr');
+		}
+		const day = document.createElement('td');
+		day.setAttribute('data-date', marker.toISOString().split('T')[0]);
+		day.setAttribute('data-day', marker.getDate());
+		if (marker.getDate() === 1) {
+			day.setAttribute('data-month', marker.toGMTString().split(' ')[2].toUpperCase());
+		}
+		if (index.current === 0) {
+			day.id = 'today';
+		}
+		if ([0, 6].indexOf(marker.getDay()) !== -1) {
+			day.classList.add('weekend');
+		}
+		if (marker.getMonth() % 2 !== now.getMonth() % 2) {
+			day.classList.add('alternate');
+		}
+		week.appendChild(day);
+		marker.setDate(marker.getDate() + 1);
+		if (marker.getDay() === START_WEEK) {
+			calendar.appendChild(week);
+		}
+	}
+	$('script').insertAdjacentHTML('beforebegin', '<div id="content"></div>');
+	$('div').insertAdjacentElement('afterbegin', calendar);
+	const scroll2Today = () => {
+		const todayRect = $('#today').getBoundingClientRect();
+		window.scrollTo(0, window.pageYOffset + todayRect.top - todayRect.height);
+	};
+	scroll2Today();
+	calendar.addEventListener('click', (event) => {
+		const dayExpanded = $('[aria-expanded]');
+		let day = event.target;
+		while (!day.getAttribute('data-date')) {
+			if (day.tagName.toLowerCase() === 'div') return;
+			day = day.parentElement;
+		}
+		if (day !== dayExpanded) {
+			if (dayExpanded) {
+				dayExpanded.removeAttribute('aria-expanded');
+			}
+			if (day && !day.getAttribute('aria-expanded') && day.querySelector('.events')) {
+				day.setAttribute('aria-expanded', 'true');
+			}
+		}
+	});
+	// TODO add setTimeOut to listen for date change and adapt class/data-
+	const url = window.localStorage.getItem(STORAGE_KEY);
+	if (url) {
+		fetch(url).then((response) => response.json()).then((data) => {
+			if (!data || typeof data !== 'object') return;
+			const addAppointments = (appointments, datePick, todo) => {
+				(appointments || []).forEach((entry) => {
+					if (entry[datePick]) {
+						todo(entry);
+					}
+				});
+			};
+			const addAppointment = (day, type, entry, specificName) => {
+				if (!day) return;
+				const details = {};
+				const addNode = (parentNode, tagName, text, options) => {
+					let node;
+					options = options || {};
+					if (text) {
+						node = document.createElement(tagName);
+						['className', 'title'].forEach((attribute) => {
+							if (options[attribute]) {
+								node[attribute] = options[attribute];
+							}
+						});
+						if (text && typeof text !== 'boolean') {
+							node[options.html ? 'innerHTML' : 'textContent'] = text;
+						}
+						parentNode.appendChild(node);
+					}
+					return node;
+				};
+				const appointmentList = day.querySelector('ul') || addNode(day, 'ul', true, {role: 'list', className: 'events'});
+				const appointment = document.createElement('li');
+				appointment.className = 'event ' + type;
+				details.time = (entry.due || entry.start).slice(11, 16);
+				addNode(appointment, 'time', details.time);
+				details.name = (specificName || entry.name).split(' ');
+				details.name.forEach((word, index) => {
+					if (word && ['#', '@', '+', '*', '!'].indexOf(word.charAt(0)) !== -1) {
+						details.name[index] = `<i class="tag" data-title="${word}">${word.slice(1)}</i>`;
+					}
+				});
+				appointment.innerHTML += ' ' + details.name.join(' ');
+				addNode(appointment, 'p', (entry.location || '').replace(/[\s\S]+/, (text) => {
+					const url = `https://www.google.com/maps?q=${encodeURIComponent(text)}`;
+					return makeLink(url, text);
+				}), {className: 'location', html: true});
+				addNode(appointment, 'p', (entry.description || '').replace(/(https?)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/g, (url) => {
+					return makeLink(url, url);
+				}), {className: 'description', html: true});
+				appointmentList.appendChild(appointment);
+			};
+			addAppointments(data.holidays, 'start', (entry) => {
+				const day = $(`[data-date="${entry.start}"]`);
+				if (day) {
+					day.setAttribute('data-public-holiday', entry.name || '');
+				}
+			});
+			addAppointments(data.birthdays, 'start', (entry) => {
+				['last', 'this', 'next'].forEach((year) => {
+					year = index.year[year];
+					const dt = entry.start.split('-');
+					const yearOfBirth = parseInt(dt[0], 10);
+					dt[0] = year;
+					const day = $(`[data-date="${dt.join('-')}"]`);
+					addAppointment(day, 'birthday', entry, `${entry.name} *${year - yearOfBirth}`);
+				});
+			});
+			addAppointments(data.anniversaries, 'start', (entry) => {
+				['last', 'this', 'next'].forEach((year) => {
+					year = index.year[year];
+					const dt = entry.start.split('-');
+					const yearOfFirstOccurance = parseInt(dt[0], 10);
+					dt[0] = year;
+					const day = $(`[data-date="${dt.join('-')}"]`);
+					addAppointment(day, 'anniversary', entry, entry.name.includes('#') ? null : `${entry.name} *${year - yearOfFirstOccurance}`);
+				});
+			});
+			addAppointments(data.events, 'start', (entry) => {
+				const day = $(`[data-date="${entry.start.slice(0, 10)}"]`);
+				addAppointment(day, 'appointment', entry);
+			});
+			addAppointments(data.tasks, 'due', (entry) => {
+				const day = $(`[data-date="${entry.due.slice(0, 10)}"]`);
+				addAppointment(day, 'task', entry);
+			});
+		});
+	}
+})();
+</script></body>
+</html>

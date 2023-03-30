@@ -1,5 +1,0 @@
-s|{{ name }}|Console|g
-s|{{ path }}|console|g
-s|{{ mode }}|standalone|
-s|{{ background }}|#000000|
-s|{{ content }}|<header><div class="banner"><h1>Console</h1><button class="action action--clear">Clear log</button></div></header><main><noscript>Note: This application requires JavaScript.</noscript></main><footer><input type="text"></footer>|

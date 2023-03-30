@@ -1,0 +1,196 @@
+:root   { --tinge: #9e9e9e; }
+.indigo { --tinge: #3f51b5; }
+.orange { --tinge: #ff9800; }
+.pink   { --tinge: #e91e63; }
+.purple { --tinge: #9c27b0; }
+.teal   { --tinge: #009688; } 
+
+html {
+	background-color: #f2f2f2;
+}
+main {
+	padding: 0;
+}
+h1 {
+	transition: margin .3s ease;
+}
+.show-details h1 {
+	margin-left: 2rem;
+}
+ul {
+	list-style: none;
+}
+li > a {
+	position: relative;
+	padding: .625rem 0 .5rem 4.5rem;
+	line-height: 1.5;
+	text-decoration: none;
+}
+.card {
+	background: #fff;
+	box-shadow: 0 -1px 0 #e0e0e0, 0 0 2px rgba(0,0,0,.12), 0 2px 4px rgba(0,0,0,.24);
+}
+.details .card {
+	padding: 1rem;
+}
+.show-details .contacts {
+	display: none;
+}
+small {
+	font-size: 75%;
+	color: rgba(0,0,0,.4);
+}
+li > a,
+small,
+dd span {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+li > a::before {
+	content: attr(data-initial);
+	display: block;
+	position: absolute;
+	width: 3.75rem;
+	height: 3.75rem;
+	top: 0;
+	left: 0;
+	background-color: var(--tinge);
+	color: #fff;
+	font-size: 2rem;
+	line-height: 3.75rem;
+	text-align: center;
+}
+h2 {
+	padding: 1rem;
+	height: 8rem;
+	display: flex;
+	align-items: flex-end;
+	background-color: var(--tinge);
+	color: #fff;
+	font-size: 150%;
+	font-weight: inherit;
+	text-shadow: 0 1px rgba(0,0,0,.2);
+	animation: .3s ease colorize forwards;
+}
+.tag::before {
+	content: '#';
+	color: rgba(0,0,0,.2);
+}
+h3,
+p {
+	padding-bottom: .5rem;
+}
+p {
+	padding-top: .5rem;
+}
+h3 {
+	color: var(--tinge);
+	font-size: 75%;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+dd + dt {
+	margin-top: .5rem;
+	padding-top: .5rem;
+}
+dd {
+	display: flex;
+	padding: .5rem 0;
+}
+dd span {
+	flex-grow: 1;
+}
+.details small {
+	display: block;
+	text-transform: uppercase;
+}
+@media (max-width: 37.95em) {
+	.show-details main {
+		padding-bottom: 4rem;
+	}
+}
+@media (max-width: 31.95em) {
+	.contacts h2 {
+		display: none;
+	}
+}
+@media (min-width: 32em) {
+	.card {
+		margin: 1rem;
+	}
+	.contacts .card + .card {
+		margin-top: calc(1px - 1rem);
+	}
+	dt {
+		margin-right: -1rem;
+	}
+	dd + dt {
+		border-top: 1px solid #f2f2f2;
+	}
+}
+@media (min-width: 32em) {
+	h2 {
+		height: 10rem;
+		margin-bottom: -3rem;
+		padding: 1rem calc(50% - 14rem) 3rem;
+	}
+	.card {
+		max-width: 30rem;
+		margin-right: auto;
+		margin-left: auto;
+	}
+}
+dl .action {
+	position: relative;
+}
+dl .action::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: var(--tinge);
+	mix-blend-mode: screen;
+}
+.action-primary {
+	position: fixed;
+	right: 1.25rem;
+	bottom: 2rem;
+	width: 3.5rem;
+	height: 3.5rem;
+	background-color: var(--tinge);
+	border-radius: 50%;
+	box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
+	text-indent: 4rem;
+}
+.action--download {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='%23fff' d='M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7z'/%3E%3C/svg%3E");
+}
+.action--phone-text {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2M6 9h12v2H6m8 3H6v-2h8m4-4H6V6h12'/%3E%3C/svg%3E");
+}
+.action--phone-call {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M6.6 10.8c1.5 2.8 3.8 5.1 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.3c1.2.4 2.4.6 3.6.6a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.3.2 2.5.6 3.6 0 .3 0 .7-.3 1l-2.2 2.2z'/%3E%3C/svg%3E");
+}
+.action--mail-compose {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M20 8l-8 5-8-5V6l8 5 8-5m0-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z'/%3E%3C/svg%3E");
+}
+.action--close {
+	position: fixed;
+	z-index: 6;
+	top: .5rem;
+	left: .5rem;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M20 11v2H8l5.5 5.5L12 20l-7.8-8 8-8 1.3 1.5L8 11h12z'%3E%3C/path%3E%3C/svg%3E");
+	opacity: 1;
+	animation: .3s ease appear-from-left forwards;
+}
+@keyframes appear-from-left {
+	from { left: -1.5rem; }
+}
+@keyframes colorize {
+	from { background-color: #9e9e9e; }
+	to { background-color: var(--tinge); }
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="/init.css">
+<style>
+::placeholder{color:#8f8f9d;font:inherit;opacity:1}
+#content{padding:1rem}
+#content p,#content fieldset{display:grid;grid-template-columns:max-content 7rem 1fr 2.5rem 2.5rem;gap:.5rem;place-items:center start;max-width:40rem;margin:0 auto;padding:0;border:none}
+#content fieldset{margin-top:1rem;padding-top:1rem;border-top:.0625rem dotted #8f8f9d}
+#content p+fieldset{border-top-style:solid}
+#content p>*,#content fieldset>*{grid-row:1/1}
+#content p a{font-weight:700}
+#content input{border:.125rem solid #8f8f9d;border-radius:.25rem}
+#content input[type="checkbox"]{grid-column:1;margin:0}
+#content input[type="text"]{display:block;grid-column:2/-1;grid-row:2/2;width:100%;margin:0;padding:.375rem}
+#content button[type="button"]{position:relative;padding:.375rem 1.5rem;border:.125rem solid #202225;border-radius:1.25rem;background-color:transparent}
+#content button[type="button"]{grid-column:5;grid-row:1/1;justify-self:end;position:relative;width:2.375rem;padding:.375rem 0;text-align:center}
+#content br+button[type="button"]{grid-column:4}
+#content br{display:none}
+button.primary{--icon:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23fff" d="M9 16.172l10.594-10.594 1.406 1.406-12 12-5.578-5.578 1.406-1.406z"%3E%3C/path%3E%3C/svg%3E')}
+@media(min-width:40em){
+	#content input[type="text"]{grid-column:auto;grid-row:1/1;width:calc(100% - 1rem)}
+}
+legend,label{overflow:hidden;position:absolute;z-index:1;width:1px;height:1px;margin:-1px;clip:rect(0,0,0,0);border:0;white-space:nowrap}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body><script type="module">
+import init from '/init.js';
+(async () => {
+	if (!('serviceWorker' in navigator)) return;
+	navigator.serviceWorker.register('/sw.js');
+	const data = await init('settings', 'Settings');
+
+	const formRows = [];
+	const base = [{ id: 'desktop', name: 'Desktop', show: !!data.show, src: data.src || '', srcDesc: 'URL of a stylesheet' }];
+	base.concat(data.apps).forEach((app, index) => {
+		const url = index ? `/${app.id}/` : '/';
+		const container = index ? 'fieldset' : 'p';
+		const legend = index ? `<legend>${app.name}</legend>` : '';
+		const suffix = index ? `<br><button type="button" aria-label="Move ${app.name} up">↑</button><button type="button" aria-label="Move ${app.name} down">↓</button>` : '';
+		const source = app.srcDesc ? `<br><label for="${app.id}_source">${app.name} source: </label><input type="text" id="${app.id}_source" name="${app.id}_source" placeholder="${app.srcDesc}" value="${app.src || ''}">` : '';
+		formRows.push(`<${container} id="${app.id}">${legend}<a href="${url}" target="_blank" aria-label="Open ${app.name} in new window">${app.name}</a><br><label for="show_${app.id}">Show ${app.name}: </label><input type="checkbox" id="show_${app.id}" name="show_${app.id}"${app.show ? ' checked' : ''}>${source}${suffix}</${container}>`);
+	});
+	formRows.push('<div><button class="primary" type="submit"><span class="visually-hidden">Save</span></button></div>');
+	const form = `<form id="content" name="content" action="." method="get" aria-label="Settings">${formRows.join('')}</form>`;
+	$('script').insertAdjacentHTML('beforebegin', form);
+
+	const update = () => {
+		// save app state and order
+		const persist = { version: 2 };
+		const rootShow = !!$('#desktop input[type="checkbox"]:checked');
+		if (rootShow) persist.show = true;
+		const rootSrc = $('#desktop input[type="text"]').value;
+		if (rootSrc) persist.src = rootSrc;
+		persist.apps = Array.from($$('#content fieldset')).map((fieldset) => {
+			const checkbox = fieldset.querySelector('input[type="checkbox"]');
+			const app = { id: fieldset.id };
+			if (checkbox.checked) app.show = true;
+			const srcNode = fieldset.querySelector('input[type="text"]');
+			if (srcNode && srcNode.value && fieldset.id !== 'settings') app.src = srcNode.value;
+			return app;
+		});
+		const settingsSrc = `data:application/json;base64,${btoa(JSON.stringify(persist))}`;
+		$('#settings input[type="text"]').value = settingsSrc;
+		// save additional data per app
+		$$('#content input[type="text"]').forEach((srcNode, index) => {
+			const pathname = index ? `/${srcNode.parentElement.id}/` : '/';
+			if (srcNode.value) {
+				window.localStorage.setItem(pathname, srcNode.value);
+			} else {
+				window.localStorage.removeItem(pathname);
+			}
+		});
+	};
+	update();
+
+	$('#content').addEventListener('click', (event) => {
+		if (event.target.tagName.toLowerCase() !== 'button') return;
+		if (event.target.getAttribute('type') !== 'button') return;
+		event.preventDefault();
+		const label = event.target.getAttribute('aria-label');
+		const fieldset = event.target.parentElement;
+		if (label.endsWith('up')) {
+			const prevFieldset = fieldset.previousElementSibling;
+			if (!prevFieldset) {
+				$('#content div').before(fieldset);
+			} else {
+				prevFieldset.before(fieldset);
+			}
+		} else {
+			const nextFieldset = fieldset.nextElementSibling;
+			if (nextFieldset.tagName.toLowerCase() !== 'fieldset') {
+				fieldset.parentElement.prepend(fieldset);
+			} else {
+				nextFieldset.after(fieldset);
+			}
+		}
+		event.target.focus();
+	});
+
+	$('#content').addEventListener('submit', (event) => {
+		event.preventDefault();
+		update();
+	});
+})();
+</script></body>
+</html>

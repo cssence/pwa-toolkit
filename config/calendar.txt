@@ -1,5 +1,0 @@
-s|{{ name }}|Calendar|g
-s|{{ path }}|calendar|g
-s|{{ mode }}|standalone|
-s|{{ background }}|#202225|
-s|{{ content }}|<header><div class="banner"><h1>Calendar</h1><button class="action action--modify-source">Source</button></div><div class="source"><button class="action action--back">Back</button><input class="source-url" type="text" placeholder="URL of a JSON file"><button class="action action--update">Update</button></div></header><main><noscript>Note: This application requires JavaScript.</noscript></main>|

@@ -4,16 +4,7 @@ What started as a toolbox for html/css/js (focusing on CSS viewport units) is no
 
 ## Build
 
-This is a zero-dependency project. It assumes you’ll be running on a *nix-like OS.
-The `#!/bin/bash` build script makes use of the `sed` command, as looking at `./build.sh` will tell you.
-
-All good? Then run the build:
-
-```shell
-npm run build
-```
-
-After the build, serve the `public` folder with an http-server of your choice, e.g.
+This is a zero-dependency project, without any build step. However, you need to serve the `public` folder. Any http-server will do, e.g.
 
 ```shell
 npm install http-server

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Notepad</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="/init.css">
+<style>
+#content pre,#content textarea{width:100%;height:100%;margin:0;padding:1em;outline-color:transparent !important}
+#content pre{overflow:auto;background:linear-gradient(#ff69b480, #ff69b480) 85vw 0 / .125rem 100% no-repeat local,linear-gradient(#eee .1em, transparent .1em) 0 .75rem / 100% 1.5em local #fff;font:inherit;white-space:pre-line}
+#content textarea:not([hidden]){display:block;border:none;resize:none}
+#content pre,#content a{overflow-wrap:break-word}
+#content textarea{
+	background:
+		linear-gradient(90deg, #eee .1em, transparent .1em) .55em .55em / 1em 100%,
+		linear-gradient(#eee .1em, transparent .1em) .55em .55em / 100% 1em
+		#fff;
+}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body><script type="module">
+import init from '/init.js';
+(async () => {
+	if (!('serviceWorker' in navigator)) return;
+	navigator.serviceWorker.register('/sw.js');
+	await init('notepad', 'Notepad');
+
+	const STORAGE_KEY = location.pathname;
+	$('script').insertAdjacentHTML('beforebegin', '<form id="content" name="content" action="." method="get" aria-label="Editor"><pre hidden tabindex="-1"></pre><textarea></textarea></form>');
+	const form = $('#content');
+	const pre = form.querySelector('pre');
+	const textarea = form.querySelector('textarea');
+	textarea.value = window.localStorage.getItem(STORAGE_KEY);
+	const swap = () => {
+		pre.hidden = !pre.hidden;
+		textarea.hidden = !textarea.hidden;
+		if (pre.hidden) {
+			textarea.focus();
+		} else {
+			pre.innerHTML = textarea.value.replace(/(\b(https?|mailto|tel):\/\/[^\s]*)/g, (url) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${url}</a>`);
+			pre.focus();
+		}
+	};
+	textarea.addEventListener('blur', (event) => {
+		window.localStorage.setItem(STORAGE_KEY, event.target.value);
+	});
+	form.addEventListener('dblclick', swap);
+	swap();
+})();
+</script></body>
+</html>

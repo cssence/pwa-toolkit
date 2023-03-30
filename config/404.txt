@@ -1,5 +1,0 @@
-s|{{ name }}|Blank™|g
-s|{{ path }}|404|g
-s|{{ mode }}|fullscreen|
-s|{{ background }}|#000000|
-s|{{ content }}||
