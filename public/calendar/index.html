@@ -202,11 +202,12 @@ import init from '/init.js';
 	}
 	$('script').insertAdjacentHTML('beforebegin', '<div id="content"></div>');
 	$('div').insertAdjacentElement('afterbegin', calendar);
-	const scroll2Today = () => {
-		const todayRect = $('#today').getBoundingClientRect();
-		window.scrollTo(0, window.pageYOffset + todayRect.top - todayRect.height);
-	};
-	scroll2Today();
+	// const scroll2Today = () => {
+	// 	const todayRect = $('#today').getBoundingClientRect();
+	// 	window.scrollTo(0, window.pageYOffset + todayRect.top - todayRect.height);
+	// };
+	// scroll2Today();
+	$('#today').scrollIntoView();
 	calendar.addEventListener('click', (event) => {
 		const dayExpanded = $('[aria-expanded]');
 		let day = event.target;
