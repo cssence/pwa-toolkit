@@ -16,6 +16,8 @@
 		linear-gradient(#eee .1em, transparent .1em) .55em .55em / 100% 1em
 		#fff;
 }
+button.primary[aria-pressed="false"]{--icon:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23fff" d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"%3E%3C/path%3E%3C/svg%3E')}
+button.primary[aria-pressed="true"]{--icon:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23fff" d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10A2,2 0 0,1 6,8H15V6A3,3 0 0,0 12,3A3,3 0 0,0 9,6H7A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,17A2,2 0 0,0 14,15A2,2 0 0,0 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17Z"%3E%3C/path%3E%3C/svg%3E')}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon.png" type="image/png">
@@ -30,15 +32,17 @@ import init from '/init.js';
 	await init('notepad', 'Notepad');
 
 	const STORAGE_KEY = location.pathname;
-	$('script').insertAdjacentHTML('beforebegin', '<form id="content" name="content" action="." method="get" aria-label="Editor"><pre hidden tabindex="-1"></pre><textarea></textarea></form>');
+	$('script').insertAdjacentHTML('beforebegin', '<form id="content" name="content" action="." method="get" aria-label="Editor"><pre hidden tabindex="-1"></pre><textarea></textarea><button class="primary" type="submit" aria-pressed="true"><span class="visually-hidden">Save</span></button></form>');
 	const form = $('#content');
 	const pre = form.querySelector('pre');
 	const textarea = form.querySelector('textarea');
 	textarea.value = window.localStorage.getItem(STORAGE_KEY);
-	const swap = () => {
-		pre.hidden = !pre.hidden;
-		textarea.hidden = !textarea.hidden;
-		if (pre.hidden) {
+	const swap = (event) => {
+		const editable = !pre.hidden;
+		pre.hidden = editable;
+		textarea.hidden = !editable;
+		form.querySelector('.primary').setAttribute('aria-pressed', editable ? 'true' : 'false');
+		if (editable) {
 			textarea.focus();
 		} else {
 			pre.innerHTML = textarea.value.replace(/(\b(https?|mailto|tel):\/\/[^\s]*)/g, (url) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${url}</a>`);
@@ -48,7 +52,10 @@ import init from '/init.js';
 	textarea.addEventListener('blur', (event) => {
 		window.localStorage.setItem(STORAGE_KEY, event.target.value);
 	});
-	form.addEventListener('dblclick', swap);
+	form.addEventListener('submit', (event) => {
+		event.preventDefault();
+		swap();
+	});
 	swap();
 })();
 </script></body>
