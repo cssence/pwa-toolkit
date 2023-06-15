@@ -98,7 +98,7 @@
 						contact.phone.forEach(function (item) {
 							var dd = makeElement("dd");
 							dd.appendChild(makeElement("span", item.value + " <small>" + item.type + "</small>"));
-							if (item.type.indexOf("Landline") === -1) {
+							if (item.type.includes("Landline")) {
 								dd.appendChild(makeElement("a", "Text", {
 									"href": "sms:" + item.value.replace(/\s/g, ""),
 									"class": "action action--phone-text"

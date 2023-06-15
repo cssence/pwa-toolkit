@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Outlook</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="/init.css">
+<style>
+#content{padding:1rem}
+#content section+section{margin-top:1.5rem;padding-top:1.75rem;border-top:.0625rem dashed}
+#content :is(h2,dl,p){margin:0}
+#content h2{font-size:inherit}
+#content dt{text-align:right}
+#content dd{position:relative;margin-left:0;padding-left:2rem}
+#content dd+dd{margin-top:1.5rem}
+#content dd::before{position:absolute;display:inline-block;width:1.75rem;margin:-.1875rem 0 0 -2rem;font-size:125%;text-align:center}
+#content dd[data-event-type="birthday"]::before{content:'🎂'}
+#content dd[data-event-type="anniversary"]::before{content:'🎉'}
+#content dd[data-event-type="appointment"]::before{content:'🗓'}
+#content dd[data-event-type="task"]::before{content:'🗒'}
+#content i{position:relative;top:-.0625rem;padding:0 .1875rem;border:.0625rem solid var(--color);border-radius:.25rem;font-size:75%;font-style:inherit}
+#content i::before{position:absolute;display:inline-block;width:2ch;margin-left:-1.75rem;text-align:center}
+#content i[data-title^="*"]{background-color:var(--color);color:white}
+#content p{text-align:center}
+#content p::before{content:'·Empty·';display:grid;place-items:center;width:6rem;aspect-ratio:1;margin:1rem auto 2rem;border:.125rem solid;border-radius:50%;outline:.0625rem solid;outline-offset:-.3125rem;font-family:cursive;font-size:1.5rem}
+@media(min-width:48em){
+	#content section{max-width:36rem;margin-right:auto;margin-left:auto}
+}
+#content :where(dd[data-event-type="public holiday"],dt,p){opacity:.5}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body><script type="module">
+import init from '/init.js';
+(async () => {
+	if (!('serviceWorker' in navigator)) return;
+	navigator.serviceWorker.register('/sw.js');
+	await init('outlook', 'Outlook');
+	const STORAGE_KEY = location.pathname;
+
+	$('script').insertAdjacentHTML('beforebegin', '<div id="content"></div>');
+	const url = window.localStorage.getItem(STORAGE_KEY);
+	if (url) {
+		fetch(url).then((response) => response.json()).then((data) => {
+			if (!data || typeof data !== 'object') return;
+			const iNow = Date.now();
+			const now = new Date(iNow);
+			const thisYear = now.getFullYear();
+			const nextYear = thisYear + 1;
+			const d2s = (dt) => `${dt.getFullYear()}-${(dt.getMonth() + 1 + '').padStart(2, '0')}-${(dt.getDate() + '').padStart(2, '0')}`;
+			const date = {
+				today: d2s(now),
+				tomorrow: d2s(new Date(iNow + 86400000)),
+				in14days: d2s(new Date(iNow + 14 * 86400000))
+			};
+			const config = [
+				{ id: 'holidays', type: 'public holiday' },
+				{ id: 'birthdays', type: 'birthday', recurring: true, nameMap: (entry) => {
+					const year = parseInt(entry.date.slice(0, 4), 10);
+					const yearOfBirth = parseInt(entry.initialDate.slice(0, 4), 10);
+					return `${entry.name} *${year - yearOfBirth}`;
+				} },
+				{ id: 'anniversaries', type: 'anniversary', recurring: true, nameMap: (entry) => {
+					const year = parseInt(entry.date.slice(0, 4), 10);
+					const yearOfFirstOccurance = parseInt(entry.initialDate.slice(0, 4), 10);
+					return entry.name.includes('#') ? entry.name : `${entry.name} *${year - yearOfFirstOccurance}`;
+				} },
+				{ id: 'events', type: 'appointment' },
+				{ id: 'tasks', type: 'task', dateMap: 'due' }
+			];
+			let entries = [];
+			config.map((item) => item.id).forEach((id, index) => {
+				(data[id] || []).forEach((entry) => {
+					const date = entry[config[index].dateMap || 'start'].slice(0, 10);
+					const props = {
+						type: config[index].type,
+						priority: index,
+						name: entry.name,
+					};
+					if (config[index].recurring) {
+						[thisYear, nextYear].forEach((year) => {
+							entries.push({
+								date: [year, ...date.split('-').slice(1)].join('-'),
+								initialDate: date,
+								...props
+							});
+						});
+					} else {
+						entries.push({ date: date, ...props });
+					}
+				});
+			});
+			entries = entries.filter((entry) => entry.date >= date.today && entry.date <= date.in14days);
+			entries.sort((a, b) => {
+				if (a.date === b.date) return a.priority - b.priority;
+				return a.date < b.date ? -1 : 1;
+			});
+			const format = {
+				hashtag: (tag) => `<i data-title="${tag}">${tag.slice(1)}</i>`,
+				// emoji: (emoji) => `<span aria-hidden="true">${emoji} </span>`,
+				date: (day) => `<dt>${new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(day))}</dt>`,
+				entry: (entry) => {
+					const name = config[entry.priority].nameMap || ((entry) => entry.name);
+					let title = name(entry).split(' ').map((word) => {
+						return (word && ['#', '@', '+', '*', '!'].includes(word.charAt(0))) ? format.hashtag(word) : word;
+					}).join(' ');
+					return `<dd data-event-type="${entry.type}">${title}</dd>`;
+				}
+			};
+			const content = ['<section><p>No upcoming events in the next two weeks.</p></section>'];
+			if (entries.length) {
+				content.length = 0;
+				let prevDate;
+				entries.forEach((entry) => {
+					if (entry.date !== prevDate) {
+						if (prevDate && prevDate <= date.tomorrow) {
+							content.push('</dl>');
+							content.push('</section>');
+						}
+						if (entry.date === date.today) {
+							content.push('<section>');
+							content.push(`<h2 id="today">Today</h2>`);
+							content.push('<dl aria-labelledby="today">');
+						} else if (entry.date === date.tomorrow) {
+							content.push('<section>');
+							content.push(`<h2 id="tomorrow">Tomorrow</h2>`);
+							content.push('<dl aria-labelledby="tomorrow">');
+						} else if (prevDate <= date.tomorrow) {
+							content.push('<section>');
+							content.push('<h2 id="upcoming">Upcoming</h2>');
+							content.push('<dl aria-labelledby="upcoming">');
+						}
+						content.push(format.date(entry.date));
+						prevDate = entry.date;
+					}
+					content.push(format.entry(entry));
+				});
+				content.push('</dl>');
+				content.push('</section>');
+			}
+			$('#content').insertAdjacentHTML('afterbegin', content.join(''));
+		});
+	}
+})();
+</script></body>
+</html>

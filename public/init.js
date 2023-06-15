@@ -10,6 +10,7 @@ const main = async (id, name) => {
 			{ id: 'calendar', name: 'Calendar', srcDesc: 'URL of a JSON file' },
 			{ id: 'console', name: 'Console'},
 			{ id: 'notepad', name: 'Notepad'},
+			{ id: 'outlook', name: 'Outlook', srcDesc: 'URL of a JSON file' },
 			{ id: 'settings', name: 'Settings', show: true, srcDesc: 'URL of a JSON file' },
 			{ id: 'wallpaper', name: 'Wallpaper', srcDesc: 'URL of an image' }
 		]
