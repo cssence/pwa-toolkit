@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Outlook</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
 <link rel="stylesheet" href="/init.css">
 <style>
 #content{padding:1rem}
@@ -18,9 +19,9 @@
 #content dd[data-event-type="anniversary"]::before{content:'🎉'}
 #content dd[data-event-type="appointment"]::before{content:'🗓'}
 #content dd[data-event-type="task"]::before{content:'🗒'}
-#content i{position:relative;top:-.0625rem;padding:0 .1875rem;border:.0625rem solid var(--color);border-radius:.25rem;font-size:75%;font-style:inherit}
+#content i{position:relative;top:-.0625rem;padding:0 .1875rem;border:.0625rem solid CanvasText;border-radius:.25rem;font-size:75%;font-style:inherit}
 #content i::before{position:absolute;display:inline-block;width:2ch;margin-left:-1.75rem;text-align:center}
-#content i[data-title^="*"]{background-color:var(--color);color:white}
+#content i[data-title^="*"]{background-color:CanvasText;color:Canvas}
 #content p{text-align:center}
 #content p::before{content:'·Empty·';display:grid;place-items:center;width:6rem;aspect-ratio:1;margin:1rem auto 2rem;border:.125rem solid;border-radius:50%;outline:.0625rem solid;outline-offset:-.3125rem;font-family:cursive;font-size:1.5rem}
 @media(min-width:48em){
