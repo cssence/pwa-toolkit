@@ -4,30 +4,32 @@
 <meta charset="utf-8">
 <title>Outlook</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="/init.css">
 <style>
-#content{padding:1rem}
-#content section+section{margin-top:1.5rem;padding-top:1.75rem;border-top:.0625rem dashed}
+#content{padding:1.25rem .5rem;background-color:var(--color-bg-secondary)}
 #content :is(h2,dl,p){margin:0}
 #content h2{font-size:inherit}
-#content dt{text-align:right}
+#content :is(dt,p){text-align:right}
 #content dd{position:relative;margin-left:0;padding-left:2rem}
-#content dd+dd{margin-top:1.5rem}
+#content dd+dd,#upcoming+p{margin-top:1.5rem}#upcoming+p{font-style:italic;text-align:center}
 #content dd::before{position:absolute;display:inline-block;width:1.75rem;margin:-.1875rem 0 0 -2rem;font-size:125%;text-align:center}
 #content dd[data-event-type="birthday"]::before{content:'🎂'}
 #content dd[data-event-type="anniversary"]::before{content:'🎉'}
 #content dd[data-event-type="appointment"]::before{content:'🗓'}
 #content dd[data-event-type="task"]::before{content:'🗒'}
-#content i{position:relative;top:-.0625rem;padding:0 .1875rem;border:.0625rem solid CanvasText;border-radius:.25rem;font-size:75%;font-style:inherit}
+#content i{position:relative;top:-.0625rem;padding:0 .1875rem;border:.0625rem solid var(--color-fg-primary);border-radius:.25rem;font-size:75%;font-style:inherit}
 #content i::before{position:absolute;display:inline-block;width:2ch;margin-left:-1.75rem;text-align:center}
-#content i[data-title^="*"]{background-color:CanvasText;color:Canvas}
-#content p{text-align:center}
-#content p::before{content:'·Empty·';display:grid;place-items:center;width:6rem;aspect-ratio:1;margin:1rem auto 2rem;border:.125rem solid;border-radius:50%;outline:.0625rem solid;outline-offset:-.3125rem;font-family:cursive;font-size:1.5rem}
-@media(min-width:48em){
-	#content section{max-width:36rem;margin-right:auto;margin-left:auto}
-}
+#content i[data-title^="*"]{background-color:var(--color-fg-primary);color:var(--color-bg-primary)}
 #content :where(dd[data-event-type="public holiday"],dt,p){opacity:.5}
+.card{--card-padding-horizontal:1rem;max-width:calc(30rem + 2 * var(--card-padding-horizontal));margin:0 auto;padding:.875rem var(--card-padding-horizontal) 1.75rem;background-color:var(--color-bg-primary);border:.0625rem solid transparent}
+.card+.card{margin-top:.0625rem}
+.card:first-child{border-top-right-radius:.75rem;border-top-left-radius:.75rem}
+.card:last-child{border-bottom-right-radius:.75rem;border-bottom-left-radius:.75rem}
+@media(min-width:37.5em){
+	#content{padding-top:2.5rem}
+	.card{--card-padding-horizontal:1.75rem}
+}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon.png" type="image/png">
@@ -72,9 +74,18 @@ import init from '/init.js';
 				{ id: 'events', type: 'appointment' },
 				{ id: 'tasks', type: 'task', dateMap: 'due' }
 			];
-			let entries = [];
+			const entries = { today: [], tomorrow: [], upcoming: [], add: (entry) => {
+				if (entry.date === date.today) {
+					entries.today.push(entry);
+				} else if (entry.date === date.tomorrow) {
+					entries.tomorrow.push(entry);
+				} else if (entry.date > date.today && entry.date <= date.in14days) {
+					entries.upcoming.push(entry);
+				}
+			} };
 			config.map((item) => item.id).forEach((id, index) => {
 				(data[id] || []).forEach((entry) => {
+					entries.unsorted = [];
 					const date = entry[config[index].dateMap || 'start'].slice(0, 10);
 					const props = {
 						type: config[index].type,
@@ -83,26 +94,27 @@ import init from '/init.js';
 					};
 					if (config[index].recurring) {
 						[thisYear, nextYear].forEach((year) => {
-							entries.push({
+							entries.add({
 								date: [year, ...date.split('-').slice(1)].join('-'),
 								initialDate: date,
 								...props
 							});
 						});
 					} else {
-						entries.push({ date: date, ...props });
+						entries.add({ date: date, ...props });
 					}
+
 				});
 			});
-			entries = entries.filter((entry) => entry.date >= date.today && entry.date <= date.in14days);
-			entries.sort((a, b) => {
+			delete entries.add;
+			entries.upcoming.sort((a, b) => {
 				if (a.date === b.date) return a.priority - b.priority;
 				return a.date < b.date ? -1 : 1;
 			});
 			const format = {
 				hashtag: (tag) => `<i data-title="${tag}">${tag.slice(1)}</i>`,
-				// emoji: (emoji) => `<span aria-hidden="true">${emoji} </span>`,
-				date: (day) => `<dt>${new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(day))}</dt>`,
+				// emoji: (emoji, label) => `<span role="img" aria-label="${label}">${emoji} </span>`,
+				date: (day, tagName = 'dt') => `<${tagName}>${new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(day))}</${tagName}>`,
 				entry: (entry) => {
 					const name = config[entry.priority].nameMap || ((entry) => entry.name);
 					let title = name(entry).split(' ').map((word) => {
@@ -111,37 +123,29 @@ import init from '/init.js';
 					return `<dd data-event-type="${entry.type}">${title}</dd>`;
 				}
 			};
-			const content = ['<section><p>No upcoming events in the next two weeks.</p></section>'];
-			if (entries.length) {
-				content.length = 0;
-				let prevDate;
-				entries.forEach((entry) => {
-					if (entry.date !== prevDate) {
-						if (prevDate && prevDate <= date.tomorrow) {
-							content.push('</dl>');
-							content.push('</section>');
+			const content = [];
+			['Today', 'Tomorrow', 'Upcoming'].forEach((label) => {
+				const id = label.toLowerCase();
+				content.push('<div class="card">');
+				content.push(`<h2 id="${id}">${label}</h2>`);
+				if (entries[id].length) {
+					content.push(`<dl aria-labelledby="${id}">`);
+					let prevDate;
+					entries[id].forEach((entry) => {
+						if (entry.date !== prevDate) {
+							content.push(format.date(entry.date));
+							prevDate = entry.date;
 						}
-						if (entry.date === date.today) {
-							content.push('<section>');
-							content.push(`<h2 id="today">Today</h2>`);
-							content.push('<dl aria-labelledby="today">');
-						} else if (entry.date === date.tomorrow) {
-							content.push('<section>');
-							content.push(`<h2 id="tomorrow">Tomorrow</h2>`);
-							content.push('<dl aria-labelledby="tomorrow">');
-						} else if (prevDate <= date.tomorrow) {
-							content.push('<section>');
-							content.push('<h2 id="upcoming">Upcoming</h2>');
-							content.push('<dl aria-labelledby="upcoming">');
-						}
-						content.push(format.date(entry.date));
-						prevDate = entry.date;
-					}
-					content.push(format.entry(entry));
-				});
-				content.push('</dl>');
-				content.push('</section>');
-			}
+						content.push(format.entry(entry));
+					});
+					content.push('</dl>');
+				} else if (date[id]) {
+					content.push(format.date(date[id], 'p'));
+				} else {
+					content.push('<p>No upcoming events.</p>');
+				}
+				content.push('</div>');
+			});
 			$('#content').insertAdjacentHTML('afterbegin', content.join(''));
 		});
 	}
