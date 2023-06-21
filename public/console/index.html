@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="/init.css">
 <style>
 html{background-color:#000;color:#eee}
+html[data-online="false"]{--connection:orange}
+html[data-online="true"]{--connection:#80ff80}
 body{--footer-size:var(--header-size)}
-[data-online="false"]{--connection:orange}
-[data-online="true"]{--connection:#80ff80}
 #content,#bottom{font-family:monospace}
 #content{overflow-wrap:break-word;margin:0;padding:1em 0;border:none}
 #content li{margin:0 2ch 0 6.5ch}
@@ -20,10 +20,10 @@ body{--footer-size:var(--header-size)}
 #bottom input:focus{outline:none}
 #bottom button{width:2ch;height:1.5em;padding:0;border:1px outset transparent;font-family:sans-serif;color:var(--connection,#777);text-align:center;outline:none}
 #bottom button:focus{border-color:#777}
-[data-state]{color:var(--state,#777)}
+[data-state]{color:var(--state,#fff)}
 [data-state="error"]{--state:orangered}
-[data-state="warning"]{--state:orange}
-[data-state="ok"]{--state:#80ff80}
+[data-state="warn"]{--state:orange}
+[data-state="info"]{--state:#80ff80}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon.png" type="image/png">
@@ -43,9 +43,17 @@ import init from '/init.js';
 		'<button type="submit" aria-label="Execute">⏎</button>'
 	].join('')}</form>`);
 
-	const prompt = $('#prompt');
-	const log = $('#content');
-	const LOG_ENTRY = 'li';
+	const modifiedConsole = {};
+	['log', 'info', 'warn', 'error'].forEach((key) => {
+		modifiedConsole[key] = window.console[key];
+		window.console[key] = ((...args) => {
+			modifiedConsole[key](...args);
+			const log = $('#content');
+			log.insertAdjacentHTML('beforeend', `<li data-state="${key}">${args.join(', ')}</li>`);
+			log.lastChild.scrollIntoView();
+		});
+	});
+
 	if ('onLine' in navigator) {
 		const updateConnectivity = () => {
 			$('html').setAttribute('data-online', navigator.onLine);
@@ -54,31 +62,22 @@ import init from '/init.js';
 		window.addEventListener('online', updateConnectivity);
 		window.addEventListener('offline', updateConnectivity);
 	}
-	navigator.serviceWorker.register('/sw.js').then((registration) => {
-		const swOutput = document.createElement(LOG_ENTRY);
-		swOutput.setAttribute('data-state', 'ok');
-		swOutput.textContent = 'ServiceWorker activated';
-		log.append(swOutput);
+	navigator.serviceWorker.register('/sw.js').then(() => {
+		console.info('ServiceWorker activated');
 	}).catch((err) => {
-		const swOutput = document.createElement(LOG_ENTRY);
-		swOutput.setAttribute('data-state', 'error');
-		swOutput.textContent = err;
-		log.append(swOutput);
+		console.error(err);
 	});
+
+	const prompt = $('#prompt');
 	$('#bottom').addEventListener('submit', (event) => {
 		event.preventDefault();
 		if (!prompt.value) return;
-		const evalOutput = document.createElement(LOG_ENTRY);
 		try {
 			const result = eval(prompt.value);
-			evalOutput.textContent = typeof result === 'undefined' ? 'undefined' : result;
-			evalOutput.setAttribute('data-state', evalOutput.textContent === 'undefined' ? 'undefined' : 'ok');
+			console.log(typeof result === 'undefined' ? 'undefined' : result);
 		} catch (err) {
-			evalOutput.setAttribute('data-state', 'error');
-			evalOutput.textContent = err;
+			console.error(err);
 		}
-		log.append(evalOutput);
-		evalOutput.scrollIntoView();
 		prompt.select();
 	});
 	prompt.focus();
