@@ -45,36 +45,63 @@ import init from '/init.js';
 	const STORAGE_KEY = location.pathname;
 
 	$('script').insertAdjacentHTML('beforebegin', '<div id="content"></div>');
-	const url = window.localStorage.getItem(STORAGE_KEY);
-	if (url) {
-		fetch(url).then((response) => response.json()).then((data) => {
-			if (!data || typeof data !== 'object') return;
-			const iNow = Date.now();
-			const now = new Date(iNow);
-			const thisYear = now.getFullYear();
-			const nextYear = thisYear + 1;
-			const d2s = (dt) => `${dt.getFullYear()}-${(dt.getMonth() + 1 + '').padStart(2, '0')}-${(dt.getDate() + '').padStart(2, '0')}`;
-			const date = {
-				today: d2s(now),
-				tomorrow: d2s(new Date(iNow + 86400000)),
-				in14days: d2s(new Date(iNow + 14 * 86400000))
-			};
-			const config = [
-				{ id: 'holidays', type: 'public holiday' },
-				{ id: 'birthdays', type: 'birthday', recurring: true, nameMap: (entry) => {
+
+	let timer, lastRefresh, url, data;
+	const d2s = (dt) => `${dt.getFullYear()}-${(dt.getMonth() + 1 + '').padStart(2, '0')}-${(dt.getDate() + '').padStart(2, '0')}`;
+
+	const getData = async () => {
+		data = {};
+		const urlFromStore = window.localStorage.getItem(STORAGE_KEY);
+		if (urlFromStore !== url) {
+			url = urlFromStore;
+			if (url) {
+				const response = await fetch(url).catch(console.error);
+				data = await response.json().catch(console.error);
+				if (!data || typeof data !== 'object') {
+					url = undefined;
+					data = {};
+				}
+			}
+			return true;
+		}
+		return false;
+	};
+	const refresh = () => {
+		const now = new Date();
+		console.info(now.toString());
+		$('#content').innerHTML = '';
+		lastRefresh = now;
+		const date = {
+			today: d2s(now),
+			tomorrow: d2s(new Date(now.getTime() + 86400000)),
+			in14days: d2s(new Date(now.getTime() + 14 * 86400000))
+		};
+		const thisYear = now.getFullYear();
+		const nextYear = thisYear + 1;
+		const config = [
+			{ id: 'holidays', type: 'public holiday' },
+			{ id: 'birthdays', type: 'birthday', recurring: true,
+				nameMap: (entry) => {
 					const year = parseInt(entry.date.slice(0, 4), 10);
 					const yearOfBirth = parseInt(entry.initialDate.slice(0, 4), 10);
 					return `${entry.name} *${year - yearOfBirth}`;
-				} },
-				{ id: 'anniversaries', type: 'anniversary', recurring: true, nameMap: (entry) => {
+				}
+			},
+			{ id: 'anniversaries', type: 'anniversary', recurring: true,
+				nameMap: (entry) => {
 					const year = parseInt(entry.date.slice(0, 4), 10);
 					const yearOfFirstOccurance = parseInt(entry.initialDate.slice(0, 4), 10);
 					return entry.name.includes('#') ? entry.name : `${entry.name} *${year - yearOfFirstOccurance}`;
-				} },
-				{ id: 'events', type: 'appointment' },
-				{ id: 'tasks', type: 'task', dateMap: 'due' }
-			];
-			const entries = { today: [], tomorrow: [], upcoming: [], add: (entry) => {
+				}
+			},
+			{ id: 'events', type: 'appointment' },
+			{ id: 'tasks', type: 'task', dateMap: 'due' }
+		];
+		const entries = {
+			today: [],
+			tomorrow: [],
+			upcoming: [],
+			add: (entry) => {
 				if (entry.date === date.today) {
 					entries.today.push(entry);
 				} else if (entry.date === date.tomorrow) {
@@ -82,73 +109,101 @@ import init from '/init.js';
 				} else if (entry.date > date.today && entry.date <= date.in14days) {
 					entries.upcoming.push(entry);
 				}
-			} };
-			config.map((item) => item.id).forEach((id, index) => {
-				(data[id] || []).forEach((entry) => {
-					entries.unsorted = [];
-					const date = entry[config[index].dateMap || 'start'].slice(0, 10);
-					const props = {
-						type: config[index].type,
-						priority: index,
-						name: entry.name,
-					};
-					if (config[index].recurring) {
-						[thisYear, nextYear].forEach((year) => {
-							entries.add({
-								date: [year, ...date.split('-').slice(1)].join('-'),
-								initialDate: date,
-								...props
-							});
+			}
+		};
+		config.map((item) => item.id).forEach((id, index) => {
+			(data[id] || []).forEach((entry) => {
+				entries.unsorted = [];
+				const date = entry[config[index].dateMap || 'start'].slice(0, 10);
+				const props = {
+					type: config[index].type,
+					priority: index,
+					name: entry.name,
+				};
+				if (config[index].recurring) {
+					[thisYear, nextYear].forEach((year) => {
+						entries.add({
+							date: [year, ...date.split('-').slice(1)].join('-'),
+							initialDate: date,
+							...props
 						});
-					} else {
-						entries.add({ date: date, ...props });
-					}
-
-				});
-			});
-			delete entries.add;
-			entries.upcoming.sort((a, b) => {
-				if (a.date === b.date) return a.priority - b.priority;
-				return a.date < b.date ? -1 : 1;
-			});
-			const format = {
-				hashtag: (tag) => `<i data-title="${tag}">${tag.slice(1)}</i>`,
-				// emoji: (emoji, label) => `<span role="img" aria-label="${label}">${emoji} </span>`,
-				date: (day, tagName = 'dt') => `<${tagName}>${new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(day))}</${tagName}>`,
-				entry: (entry) => {
-					const name = config[entry.priority].nameMap || ((entry) => entry.name);
-					let title = name(entry).split(' ').map((word) => {
-						return (word && ['#', '@', '+', '*', '!'].includes(word.charAt(0))) ? format.hashtag(word) : word;
-					}).join(' ');
-					return `<dd data-event-type="${entry.type}">${title}</dd>`;
-				}
-			};
-			const content = [];
-			['Today', 'Tomorrow', 'Upcoming'].forEach((label) => {
-				const id = label.toLowerCase();
-				content.push('<div class="card">');
-				content.push(`<h2 id="${id}">${label}</h2>`);
-				if (entries[id].length) {
-					content.push(`<dl aria-labelledby="${id}">`);
-					let prevDate;
-					entries[id].forEach((entry) => {
-						if (entry.date !== prevDate) {
-							content.push(format.date(entry.date));
-							prevDate = entry.date;
-						}
-						content.push(format.entry(entry));
 					});
-					content.push('</dl>');
-				} else if (date[id]) {
-					content.push(format.date(date[id], 'p'));
 				} else {
-					content.push('<p>No upcoming events.</p>');
+					entries.add({ date: date, ...props });
 				}
-				content.push('</div>');
+
 			});
-			$('#content').insertAdjacentHTML('afterbegin', content.join(''));
 		});
-	}
+		delete entries.add;
+		entries.upcoming.sort((a, b) => {
+			if (a.date === b.date) return a.priority - b.priority;
+			return a.date < b.date ? -1 : 1;
+		});
+		const format = {
+			hashtag: (tag) => `<i data-title="${tag}">${tag.slice(1)}</i>`,
+			// emoji: (emoji, label) => `<span role="img" aria-label="${label}">${emoji} </span>`,
+			date: (day, tagName = 'dt') => `<${tagName}>${new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(day))}</${tagName}>`,
+			entry: (entry) => {
+				const name = config[entry.priority].nameMap || ((entry) => entry.name);
+				let title = name(entry).split(' ').map((word) => {
+					return (word && ['#', '@', '+', '*', '!'].includes(word.charAt(0))) ? format.hashtag(word) : word;
+				}).join(' ');
+				return `<dd data-event-type="${entry.type}">${title}</dd>`;
+			}
+		};
+		const content = [];
+		const removeUpcomingIfNoData = url ? undefined : -1;
+		['Today', 'Tomorrow', 'Upcoming'].slice(0, removeUpcomingIfNoData).forEach((label) => {
+			const id = label.toLowerCase();
+			content.push('<div class="card">');
+			content.push(`<h2 id="${id}">${label}</h2>`);
+			if (entries[id].length) {
+				content.push(`<dl aria-labelledby="${id}">`);
+				let prevDate;
+				entries[id].forEach((entry) => {
+					if (entry.date !== prevDate) {
+						content.push(format.date(entry.date));
+						prevDate = entry.date;
+					}
+					content.push(format.entry(entry));
+				});
+				content.push('</dl>');
+			} else if (date[id]) {
+				content.push(format.date(date[id], 'p'));
+			} else {
+				content.push('<p>No upcoming events.</p>');
+			}
+			content.push('</div>');
+		});
+		$('#content').insertAdjacentHTML('afterbegin', content.join(''));
+	};
+
+	await getData();
+	refresh();
+
+	window.addEventListener('visibilitychange', () => {
+		if (document.visibilityState === 'visible') {
+			refreshAfterMidnight();
+		} else {
+			clearTimeout(timer);
+		}
+	});
+	window.addEventListener('storage', async (event) => {
+		if (event.key === STORAGE_KEY) {
+			await getData() && refresh();
+		}
+	});
+	const refreshAfterMidnight = () => {
+		const midnight = new Date(lastRefresh); // the midnight following lastRefresh
+		midnight.setHours(24, 0, 0, 0);
+		const ms = Math.max(0, midnight.getTime() - new Date().getTime());
+		timer = setTimeout(() => {
+			const diff = new Date().getTime() - midnight.getTime();
+			if (diff >= 0) refresh();
+			refreshAfterMidnight();
+		}, ms);
+	};
+	refreshAfterMidnight();
 })();
 </script></body>
 </html>
