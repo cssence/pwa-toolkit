@@ -7,20 +7,19 @@
 <meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="/init.css">
 <style>
-.card p,.card fieldset{display:grid;grid-template-columns:max-content 7rem 1fr 2.5rem 2.5rem;gap:.5rem;place-items:center start;max-width:40rem;margin:0 auto;padding:0;border:none}
-.card fieldset+fieldset{margin-top:1rem;padding-top:1rem;border-top:.0625rem dotted var(--color-bg-secondary)}
+.card p,.card fieldset{display:grid;grid-template-columns:max-content 7em 1fr 2.5em 2.5em;gap:.5em;place-items:center start;margin:0;padding:0;border:none}
+.card fieldset+fieldset{margin-top:1em;padding-top:1em;border-top:.0625rem dotted var(--color-bg-secondary)}
 .card p>*,.card fieldset>*{grid-row:1/1}
 .card p a{font-weight:700}
 .card input{border:.0625rem solid;border-radius:.1875rem}
 .card input[type="checkbox"]{grid-column:1;margin:0}
-.card input[type="text"]{display:block;grid-column:2/-1;grid-row:2/2;width:100%;margin:0;padding:.375rem}
-.card button{position:relative;grid-column:5;grid-row:1/1;justify-self:end;width:2.375rem;padding:.3125rem 0;border:.125rem solid;border-radius:.5rem;background-color:transparent;text-align:center}
+.card input[type="text"]{display:block;grid-column:2/-1;grid-row:2/2;width:100%;margin:0;padding:.375em}
+.card button{position:relative;grid-column:5;grid-row:1/1;justify-self:end;width:2.375em;padding:.3125em 0;border:.125rem solid;border-radius:.5rem;background-color:transparent;text-align:center}
 .card br+button[type="button"]{grid-column:4}
 .card br{display:none}
 button.primary{--icon:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23fff" d="M9 16.172l10.594-10.594 1.406 1.406-12 12-5.578-5.578 1.406-1.406z"%3E%3C/path%3E%3C/svg%3E')}
 @media(min-width:48em){
-	.card{max-width:calc(40.125rem + 2 * var(--card-padding-horizontal))}
-	.card input[type="text"]{grid-column:auto;grid-row:1/1;width:calc(100% - 1rem)}
+	.card input[type="text"]{grid-column:auto;grid-row:1/1;width:calc(100% - 1em)}
 }
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">

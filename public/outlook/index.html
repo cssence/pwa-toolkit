@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="/init.css">
 <style>
 #content :is(h2,dl,p){margin:0}
-#content h2{margin-top:-.875rem;font-size:inherit}
+#content h2{margin-top:-.875em;font-size:inherit}
 #content :is(dt,p){text-align:right}
 #content dd{position:relative;margin-left:0;padding-left:2rem}
 #content dd+dd,#upcoming+p{margin-top:1.5rem}#upcoming+p{font-style:italic;text-align:center}
@@ -21,6 +21,11 @@
 #content i::before{position:absolute;display:inline-block;width:2ch;margin-left:-1.75rem;text-align:center}
 #content i[data-title^="*"]{background-color:var(--color-fg-primary);color:var(--color-bg-primary)}
 #content :where(dd[data-event-type="public holiday"],dt,p){opacity:.5}
+@media(min-width:64em){
+	#content.t .card:first-of-type{font-size:1.25rem}
+	#content.t .card:last-of-type{font-size:1rem}
+	#content.t .card{border-bottom-right-radius:.75em;border-bottom-left-radius:.75em}
+}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon.png" type="image/png">
@@ -37,17 +42,23 @@ import init from '/init.js';
 
 	$('script').insertAdjacentHTML('beforebegin', '<div id="content" class="t"></div>');
 
-	let timer, lastRefresh, url, data;
+	let timer, lastRefresh, url, fail, data;
 	const d2s = (dt) => `${dt.getFullYear()}-${(dt.getMonth() + 1 + '').padStart(2, '0')}-${(dt.getDate() + '').padStart(2, '0')}`;
 
 	const getData = async () => {
 		data = {};
+		fail = undefined;
 		const urlFromStore = window.localStorage.getItem(STORAGE_KEY);
 		if (urlFromStore !== url) {
 			url = urlFromStore;
 			if (url) {
-				const response = await fetch(url).catch(console.error);
-				data = await response.json().catch(console.error);
+				try {
+					const response = await fetch(url);
+					data = response ? await response.json() : {};
+				} catch (err) {
+					console.error(err);
+					fail = `<p>Error while trying to receive <a href="${url}" target="_blank">data</a>.</p>`;
+				}
 				if (!data || typeof data !== 'object') {
 					url = undefined;
 					data = {};
@@ -162,7 +173,7 @@ import init from '/init.js';
 			} else if (date[id]) {
 				content.push(format.date(date[id], 'p'));
 			} else {
-				content.push('<p>No upcoming events.</p>');
+				content.push(fail || '<p>No upcoming events.</p>');
 			}
 			content.push('</div>');
 		});
