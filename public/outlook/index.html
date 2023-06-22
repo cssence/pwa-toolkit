@@ -7,9 +7,8 @@
 <meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="/init.css">
 <style>
-#content{padding:1.25rem .5rem;background-color:var(--color-bg-secondary)}
 #content :is(h2,dl,p){margin:0}
-#content h2{font-size:inherit}
+#content h2{margin-top:-.875rem;font-size:inherit}
 #content :is(dt,p){text-align:right}
 #content dd{position:relative;margin-left:0;padding-left:2rem}
 #content dd+dd,#upcoming+p{margin-top:1.5rem}#upcoming+p{font-style:italic;text-align:center}
@@ -22,14 +21,6 @@
 #content i::before{position:absolute;display:inline-block;width:2ch;margin-left:-1.75rem;text-align:center}
 #content i[data-title^="*"]{background-color:var(--color-fg-primary);color:var(--color-bg-primary)}
 #content :where(dd[data-event-type="public holiday"],dt,p){opacity:.5}
-.card{--card-padding-horizontal:1rem;max-width:calc(30rem + 2 * var(--card-padding-horizontal));margin:0 auto;padding:.875rem var(--card-padding-horizontal) 1.75rem;background-color:var(--color-bg-primary);border:.0625rem solid transparent}
-.card+.card{margin-top:.0625rem}
-.card:first-child{border-top-right-radius:.75rem;border-top-left-radius:.75rem}
-.card:last-child{border-bottom-right-radius:.75rem;border-bottom-left-radius:.75rem}
-@media(min-width:37.5em){
-	#content{padding-top:2.5rem}
-	.card{--card-padding-horizontal:1.75rem}
-}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon.png" type="image/png">
@@ -44,7 +35,7 @@ import init from '/init.js';
 	await init('outlook', 'Outlook');
 	const STORAGE_KEY = location.pathname;
 
-	$('script').insertAdjacentHTML('beforebegin', '<div id="content"></div>');
+	$('script').insertAdjacentHTML('beforebegin', '<div id="content" class="t"></div>');
 
 	let timer, lastRefresh, url, data;
 	const d2s = (dt) => `${dt.getFullYear()}-${(dt.getMonth() + 1 + '').padStart(2, '0')}-${(dt.getDate() + '').padStart(2, '0')}`;

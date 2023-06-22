@@ -30,7 +30,18 @@ button,input,select,textarea{background-color:transparent;color:inherit;font:inh
 #top,#switch,#switch select{background-color:#202225;color:#fff}
 #switch{width:max-content;max-width:100%}
 #switch select{margin:0 -.375rem;padding:.125rem .25rem;border:.125rem solid #202225}
-#content{overflow:auto;grid-area:content;min-height:0}
-button.primary{position:absolute;z-index:1;right:1rem;top:.5rem;width:2rem;margin:0 -.375rem 0 0;padding:.125rem .25rem;background:var(--icon) center / 1.5rem no-repeat #202225;border:.125rem solid #202225;color:#fff}
+button.primary{position:absolute;z-index:1;right:1.5rem;top:.5rem;width:2rem;margin:0 -.375rem 0 0;padding:.125rem .25rem;background:var(--icon) center / 1.5rem no-repeat #202225;border:.125rem solid #202225;color:#fff}
 button.primary::before{content:'\a0'}
+
+#content{overflow:auto;grid-area:content;min-height:0}
+#content.t{padding:1.25rem .5rem;background-color:var(--color-bg-secondary)}
+.card{--card-padding-horizontal:1rem;max-width:calc(30rem + 2 * var(--card-padding-horizontal));margin:0 auto;padding:1.75rem var(--card-padding-horizontal);background-color:var(--color-bg-primary);border:.0625rem solid transparent}
+.card+.card{margin-top:.0625rem}
+.card:first-of-type{border-top-right-radius:.75rem;border-top-left-radius:.75rem}
+.card:last-of-type{border-bottom-right-radius:.75rem;border-bottom-left-radius:.75rem}
+@media(min-width:37.5em){
+	#content.t{padding-top:2.5rem;padding-bottom:2.5rem}
+	.card{--card-padding-horizontal:1.75rem}
+}
+
 .visually-hidden{overflow:hidden;position:absolute;z-index:1;width:1px;height:1px;margin:-1px;clip:rect(0,0,0,0);border:0;white-space:nowrap}
