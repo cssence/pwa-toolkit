@@ -7,10 +7,12 @@
 <meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="/init.css">
 <style>
-#content :is(pre,textarea){width:100%;height:100%;margin:0;padding:1em 1.5em;outline-color:transparent !important}
-#content pre{overflow:auto;font:inherit;white-space:pre-line}
-#content textarea:not([hidden]){display:block;border:none;resize:none}
+#content :is(pre,textarea){margin:0;outline-color:transparent !important}
+#content > div{height:100%}
+#content pre{overflow:auto;height:100%;font:inherit;white-space:pre-line}
+#content textarea:not([hidden]){display:block;width:100%;height:100%;border:none;resize:none}
 #content :is(pre,a){overflow-wrap:break-word}
+#content > p{margin:0}
 button.primary[aria-pressed="false"]{--icon:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23fff" d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"%3E%3C/path%3E%3C/svg%3E')}
 button.primary[aria-pressed="true"]{--icon:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23fff" d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10A2,2 0 0,1 6,8H15V6A3,3 0 0,0 12,3A3,3 0 0,0 9,6H7A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,17A2,2 0 0,0 14,15A2,2 0 0,0 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17Z"%3E%3C/path%3E%3C/svg%3E')}
 </style>
@@ -27,7 +29,7 @@ import init from '/init.js';
 	await init('notepad', 'Notepad');
 
 	const STORAGE_KEY = location.pathname;
-	$('script').insertAdjacentHTML('beforebegin', '<form id="content" name="content" action="." method="get" aria-label="Editor"><pre hidden tabindex="-1"></pre><textarea></textarea><button class="primary" type="submit" aria-pressed="true"><span class="visually-hidden">Save</span></button></form>');
+	$('script').insertAdjacentHTML('beforebegin', '<form id="content" class="t" name="content" action="." method="get" aria-label="Editor"><pre class="card" hidden tabindex="-1"></pre><div><textarea class="card"></textarea></div><p><button class="primary" type="submit" aria-pressed="true"><span class="visually-hidden">Save</span></button></p></form>');
 	const form = $('#content');
 	const pre = form.querySelector('pre');
 	const textarea = form.querySelector('textarea');
@@ -35,7 +37,7 @@ import init from '/init.js';
 	const swap = (event) => {
 		const editable = !pre.hidden;
 		pre.hidden = editable;
-		textarea.hidden = !editable;
+		form.querySelector('div').hidden = !editable;
 		form.querySelector('.primary').setAttribute('aria-pressed', editable ? 'true' : 'false');
 		if (editable) {
 			textarea.focus();

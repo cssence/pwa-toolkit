@@ -36,14 +36,14 @@ import init from '/init.js';
 
 	const add = {
 		legend: (app) => `<legend class="visually-hidden">${app.name}</legend>`,
-		link: (app) => `<a href="/${app.id}/" aria-label="Open ${app.name} in new window">${app.name}</a>`,
+		link: (app) => `<a href="${app.target || ['', app.id, ''].join('/')}" aria-label="Open ${app.name} in new window">${app.name}</a>`,
 		toggle: (app) => `<label class="visually-hidden" for="show_${app.id}">Show ${app.name}: </label><input type="checkbox" id="show_${app.id}" name="show_${app.id}"${app.show ? ' checked' : ''}>`,
 		source: (app) => app.srcDesc ? `<br><label class="visually-hidden" for="${app.id}_source">${app.name} source: </label><input type="text" id="${app.id}_source" name="${app.id}_source" placeholder="${app.srcDesc}" value="${app.src || ''}">` : '',
 		sortButtons: (app) => `<button type="button" aria-label="Move ${app.name} up">↑</button><button type="button" aria-label="Move ${app.name} down">↓</button>`
 	};
 	const formRows = [];
 	formRows.push('<div class="card">');
-	const app = { id: 'desktop', name: 'Desktop', show: !!data.show, src: data.src || '', srcDesc: 'URL of a stylesheet' };
+	const app = { id: 'desktop', target: '/', name: 'Desktop', show: !!data.show, src: data.src || '', srcDesc: 'URL of a stylesheet' };
 	formRows.push(`<p id="${app.id}">${add.link(app)}<br>${add.toggle(app)}${add.source(app)}</p>`);
 	formRows.push('</div>');
 	formRows.push('<div class="card">');
