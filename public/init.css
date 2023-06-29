@@ -21,7 +21,7 @@ html{
 	}
 	.card{box-shadow:0 .125rem .25rem #7f7f7f10}
 }
-body{--header-size:3rem;--border-size:.125rem;overflow:hidden;display:grid;grid-template-areas:'header' 'content' 'footer';grid-template-columns:100%;grid-template-rows:var(--header-size) 1fr var(--footer-size,0rem);margin:0;padding:0}
+body{--header-size:3rem;overflow:hidden;display:grid;grid-template-areas:'header' 'content' 'footer';grid-template-columns:100%;grid-template-rows:var(--header-size) 1fr var(--footer-size,0rem);margin:0;padding:0}
 a:hover{text-decoration-style:double}
 button,select{-webkit-appearance:none;-moz-appearance:none;appearance:none}
 button,input,select,textarea{background-color:transparent;color:inherit;font:inherit}

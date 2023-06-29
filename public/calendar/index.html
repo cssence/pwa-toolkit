@@ -207,7 +207,7 @@ import init from '/init.js';
 	// 	window.scrollTo(0, window.pageYOffset + todayRect.top - todayRect.height);
 	// };
 	// scroll2Today();
-	$('#today').scrollIntoView();
+	if( window === window.top) $('#today').scrollIntoView();
 	calendar.addEventListener('click', (event) => {
 		const dayExpanded = $('[aria-expanded]');
 		let day = event.target;

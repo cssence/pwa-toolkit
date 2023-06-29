@@ -6,16 +6,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="stylesheet" href="/init.css">
 <style>
-html{background-color:#000;color:#eee}
+html{background-color:#101113;color:#fff}
 html[data-online="false"]{--connection:orange}
 html[data-online="true"]{--connection:#80ff80}
 body{--footer-size:var(--header-size)}
 #content,#bottom{font-family:monospace}
-#content{overflow-wrap:break-word;margin:0;padding:1em 0;border:none}
+#content{overflow-wrap:break-word;margin:0;padding:1em 0;background-color:transparent;border:none}
 #content li{margin:0 2ch 0 6.5ch}
 #bottom label,#content li::marker{color:#777}
 #bottom input,#bottom button{background:inherit;outline:none}
-#bottom{display:flex;align-items:center;gap:1ch;padding:0 3.5ch;border:0 solid #202225;border-top-width:var(--border-size)}
+#bottom{display:flex;align-items:center;gap:1ch;padding:0 3.5ch;border:0 solid #202225;border-top-width:.125rem}
 #bottom input{display:block;width:100%;margin:0;padding:.5em 0;border:none}
 #bottom input:focus{outline:none}
 #bottom button{width:2ch;height:1.5em;padding:0;border:1px outset transparent;font-family:sans-serif;color:var(--connection,#777);text-align:center;outline:none}
@@ -36,7 +36,7 @@ import init from '/init.js';
 	if (!('serviceWorker' in navigator)) return;
 	await init('console', 'Console');
 
-	$('script').insertAdjacentHTML('beforebegin', '<ol id="content" aria-label="Log entries"></ol>');
+	$('script').insertAdjacentHTML('beforebegin', '<ol id="content" class="t" aria-label="Log entries"></ol>');
 	$('script').insertAdjacentHTML('beforebegin', `<form id="bottom" name="bottom" action="." method="get">${[
 		'<label for="prompt" aria-label="Command">$&gt;</label>',
 		'<input id="prompt" name="prompt" type="text">',
@@ -50,7 +50,7 @@ import init from '/init.js';
 			modifiedConsole[key](...args);
 			const log = $('#content');
 			log.insertAdjacentHTML('beforeend', `<li data-state="${key}">${args.join(', ')}</li>`);
-			log.lastChild.scrollIntoView();
+			if (log.children.length > 1) log.lastChild.scrollIntoView();
 		});
 	});
 
@@ -80,7 +80,7 @@ import init from '/init.js';
 		}
 		prompt.select();
 	});
-	prompt.focus();
+	if (window === window.top) prompt.focus();
 })();
 </script></body>
 </html>

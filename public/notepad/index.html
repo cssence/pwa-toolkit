@@ -34,16 +34,16 @@ import init from '/init.js';
 	const pre = form.querySelector('pre');
 	const textarea = form.querySelector('textarea');
 	textarea.value = window.localStorage.getItem(STORAGE_KEY);
-	const swap = (event) => {
+	const swap = (init) => {
 		const editable = !pre.hidden;
 		pre.hidden = editable;
 		form.querySelector('div').hidden = !editable;
 		form.querySelector('.primary').setAttribute('aria-pressed', editable ? 'true' : 'false');
-		if (editable) {
-			textarea.focus();
-		} else {
+		if (!editable) {
 			pre.innerHTML = textarea.value.replace(/(\b(https?|mailto|tel):\/\/[^\s]*)/g, (url) => `<a target="_blank" rel="noopener noreferrer" href="${url}">${url}</a>`);
-			pre.focus();
+		}
+		if (!init || window === window.top) {
+			(editable ? textarea : pre).focus();
 		}
 	};
 	textarea.addEventListener('blur', (event) => {
@@ -53,7 +53,7 @@ import init from '/init.js';
 		event.preventDefault();
 		swap();
 	});
-	swap();
+	swap(true);
 })();
 </script></body>
 </html>
