@@ -22,9 +22,9 @@
 #content i[data-title^="*"]{background-color:var(--color-fg-primary);color:var(--color-bg-primary)}
 #content :where(dd[data-event-type="public holiday"],dt,p){opacity:.5}
 @media(min-width:64em){
-	#content.t .card:first-of-type{font-size:1.25rem}
-	#content.t .card:last-of-type{font-size:1rem}
-	#content.t .card{border-bottom-right-radius:.75em;border-bottom-left-radius:.75em}
+	#content:where(.t) .card:first-of-type{font-size:1.25rem}
+	#content:where(.t) .card:last-of-type{font-size:1rem}
+	#content:where(.t) .card{border-bottom-right-radius:.75em;border-bottom-left-radius:.75em}
 }
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">

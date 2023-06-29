@@ -34,17 +34,17 @@ button.primary{position:absolute;z-index:1;right:1.5rem;top:.5rem;width:2rem;mar
 button.primary::before{content:'\a0'}
 
 #content{overflow:auto;grid-area:content;min-height:0}
-#content.t{padding:1.25rem .5rem;background-color:var(--color-bg-secondary)}
-#content.t .card{--card-padding-horizontal:1em;max-width:calc(40em + 2 * var(--card-padding-horizontal));margin:0 auto;padding:1.75em var(--card-padding-horizontal);background-color:var(--color-bg-primary);outline:.0625rem solid transparent;outline-offset:-.0625rem}
-#content.t .card+.card{margin-top:.0625rem}
-#content.t .card:first-of-type{border-top-right-radius:.75em;border-top-left-radius:.75em}
-#content.t .card:last-of-type{border-bottom-right-radius:.75em;border-bottom-left-radius:.75em}
+#content:where(.t){padding:1.25rem .5rem;background-color:var(--color-bg-secondary)}
+#content:where(.t) .card{--card-padding-horizontal:1em;max-width:calc(40em + 2 * var(--card-padding-horizontal));margin:0 auto;padding:1.75em var(--card-padding-horizontal);background-color:var(--color-bg-primary);outline:.0625rem solid transparent;outline-offset:-.0625rem}
+#content:where(.t) .card+.card{margin-top:.0625rem}
+#content:where(.t) .card:first-of-type{border-top-right-radius:.75em;border-top-left-radius:.75em}
+#content:where(.t) .card:last-of-type{border-bottom-right-radius:.75em;border-bottom-left-radius:.75em}
 @media(min-width:48em){
-	#content.t{padding-top:2.5rem;padding-bottom:2.5rem}
-	#content.t .card{--card-padding-horizontal:1.75rem}
+	#content:where(.t){padding-top:2.5rem;padding-bottom:2.5rem}
+	#content:where(.t) .card{--card-padding-horizontal:1.75rem}
 }
 @media(min-width:64em){
-	#content.t .card{font-size:1.125rem}
+	#content:where(.t) .card{font-size:1.125rem}
 }
 
 .visually-hidden{overflow:hidden;position:absolute;z-index:1;width:1px;height:1px;margin:-1px;clip:rect(0,0,0,0);border:0;white-space:nowrap}

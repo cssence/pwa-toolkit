@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Empty</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
+<link rel="stylesheet" href="/init.css">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body><script type="module">
+import init from '/init.js';
+(async () => {
+	if (!('serviceWorker' in navigator)) return;
+	navigator.serviceWorker.register('/sw.js');
+	await init('404', '404');
+
+	$('script').insertAdjacentHTML('beforebegin', '<div id="content" class="t"></div>');
+
+	console.info("Guess what, it’s a no-purpose PWA - emptyness guaranteed™");
+	// Works completely offline, but all you can do is stare at a blank screen.
+});
+</script></body>
+</html>
